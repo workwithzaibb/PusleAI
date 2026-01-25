@@ -81,8 +81,8 @@ async def global_exception_handler(request: Request, exc: Exception):
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
-    allow_credentials=True,
+    allow_origins=["*"],  # Open for now, change to frontend URL in production
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
