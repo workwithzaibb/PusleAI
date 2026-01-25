@@ -11,7 +11,7 @@ This is a monorepo containing:
 
 1. Go to [Railway Dashboard](https://railway.app/dashboard)
 2. Click "New Project" → "Deploy from GitHub repo"
-3. Select `workwithzaibb/PusleAI`
+3. Select `workwithzaibb/PulseAI`
 4. **Important**: Set Root Directory to `backend`
 5. Railway will auto-detect Python and use the configuration files
 
@@ -34,7 +34,7 @@ ELEVENLABS_API_KEY=<your-elevenlabs-key>
 
 1. In Railway Dashboard, click "New Service"
 2. Select "Deploy from GitHub repo"
-3. Select `workwithzaibb/PusleAI`
+3. Select `workwithzaibb/PulseAI`
 4. **Important**: Set Root Directory to `frontend`
 5. Railway will auto-detect Node.js and use the configuration files
 
