@@ -12,6 +12,7 @@ import DoctorOnboarding from './pages/DoctorOnboarding';
 import DoctorPricing from './pages/DoctorPricing';
 import DoctorRegister from './pages/DoctorRegister';
 import PrescriptionScanner from './pages/PrescriptionScanner';
+import QueensHealth from './pages/QueensHealth';
 import HealthCursor from './components/HealthCursor';
 
 function ProtectedRoute({ children }) {
@@ -79,6 +80,7 @@ export default function App() {
           <Route path="/doctor-pricing" element={<DoctorPricing />} />
           <Route path="/doctor-register" element={<ProtectedRoute><DoctorRegister /></ProtectedRoute>} />
           <Route path="/prescription-scanner" element={<ProtectedRoute><PrescriptionScanner /></ProtectedRoute>} />
+          <Route path="/queens" element={<ProtectedRoute><QueensHealth /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
