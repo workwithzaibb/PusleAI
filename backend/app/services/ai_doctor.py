@@ -11,6 +11,7 @@ from app.services.symptom_analyzer import symptom_analyzer, SymptomAnalyzer
 from app.services.emergency_detector import emergency_detector, EmergencyDetector
 from app.services.emotion_detector import emotion_detector, EmotionDetector
 from app.services.language_detection import lang_detector, LanguageDetectionService
+from app.services.gemini_service import gemini_service
 from app.config import settings
 
 
@@ -91,7 +92,7 @@ class AIDoctorService:
         analysis = self.symptom_analyzer.analyze(user_input, language)
         
         # Generate response
-        response = self._generate_response(
+        response = await self._generate_response(
             session_id=session_id,
             analysis=analysis,
             emergency=emergency,
@@ -136,7 +137,7 @@ class AIDoctorService:
             reasoning=f"Emergency keywords detected: {', '.join(emergency.detected_keywords)}"
         )
     
-    def _generate_response(
+    async def _generate_response(
         self,
         session_id: str,
         analysis: Dict,
@@ -146,12 +147,15 @@ class AIDoctorService:
         language: str,
         user_input: str
     ) -> DoctorResponse:
-        """Generate comprehensive response"""
+        """Generate comprehensive response using Gemini AI"""
         
         conditions = analysis.get("conditions", [])
         symptoms = analysis.get("symptoms", [])
         confidence = analysis.get("overall_confidence", 0.5)
         severity = analysis.get("overall_severity", "low")
+        
+        # Get AI-generated response from Gemini
+        ai_message = await gemini_service.get_response(user_input, language)
         
         # Build advice message
         message_parts = []
@@ -160,22 +164,19 @@ class AIDoctorService:
         if emotional_prefix:
             message_parts.append(emotional_prefix)
         
-        # Add main response
-        if conditions:
+        # Add AI-generated response
+        message_parts.append(ai_message)
+        
+        # Add symptom analysis if conditions detected
+        if conditions and confidence > 0.6:
             top_condition = conditions[0]
             if language == "en":
                 message_parts.append(
-                    f"Based on your symptoms, this could be related to {top_condition['name']}. "
-                    f"{top_condition['advice']}"
+                    f"\n\n📋 Analysis: Based on symptom matching, this could be related to {top_condition['name']}."
                 )
             elif language == "hi":
                 message_parts.append(
-                    f"आपके लक्षणों के आधार पर, यह {top_condition['name']} से संबंधित हो सकता है। "
-                )
-        else:
-            if language == "en":
-                message_parts.append(
-                    "I've noted your symptoms. Please provide more details for better analysis."
+                    f"\n\n📋 विश्लेषण: लक्षण मिलान के आधार पर, यह {top_condition['name']} से संबंधित हो सकता है।"
                 )
             elif language == "hi":
                 message_parts.append(

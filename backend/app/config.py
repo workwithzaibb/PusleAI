@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     # AI/ML Settings
     WHISPER_MODEL: str = "base"  # tiny, base, small, medium, large
     OPENAI_API_KEY: Optional[str] = None
+    GEMINI_API_KEY: Optional[str] = None  # Google Gemini API Key
     
     # Language Settings
     SUPPORTED_LANGUAGES: list = ["en", "hi", "ta", "te"]
