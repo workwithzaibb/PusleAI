@@ -1,0 +1,7 @@
+backend/
+healthtrack.db
+*.py
+*.sh
+railway.toml
+requirements.txt
+runtime.txt
