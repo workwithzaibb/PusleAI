@@ -50,7 +50,7 @@ const VOICE_CONFIG = {
 };
 
 // Doctor video file
-const DOCTOR_VIDEO = "/doc.mp4";
+const DOCTOR_VIDEO = "/dr.mp4";
 
 // Mood emoji and color mapping
 const MOOD_CONFIG = {
