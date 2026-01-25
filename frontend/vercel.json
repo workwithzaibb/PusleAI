@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!assets/|static/|dr.mp4|favicon.svg).*)", "destination": "/index.html" }
   ]
 }
 
