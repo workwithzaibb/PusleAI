@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, AlertTriangle, Phone, Activity, Thermometer, Siren, Zap } from 'lucide-react';
 import { checkEmergency, getEmergencyContacts, panicButton } from '../api';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function Emergency() {
   const [symptoms, setSymptoms] = useState('');
@@ -10,6 +11,7 @@ export default function Emergency() {
   const [contacts, setContacts] = useState({ emergency: "112", ambulance: "102", police: "100" });
   const [panicActive, setPanicActive] = useState(false);
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const quickSymptoms = ['Chest pain', 'Difficulty breathing', 'Severe bleeding', 'Unconscious', 'Stroke symptoms', 'Allergic reaction'];
 
@@ -37,16 +39,16 @@ export default function Emergency() {
   };
 
   return (
-    <div className={`min-h-screen ${panicActive ? 'bg-red-950' : 'bg-black'} text-white relative overflow-hidden transition-colors`}>
+    <div className={`min-h-screen relative overflow-hidden transition-colors ${panicActive ? 'bg-red-950 text-white' : (theme === 'dark' ? 'bg-black text-white' : 'bg-gradient-to-br from-slate-50 via-red-50 to-orange-50 text-gray-900')}`}>
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/4 -right-20 w-[400px] h-[400px] bg-gradient-to-l from-red-500/20 to-transparent rounded-full blur-3xl animate-pulse" />
+        <div className={`absolute top-1/4 -right-20 w-[400px] h-[400px] rounded-full blur-3xl animate-pulse ${theme === 'dark' ? 'bg-gradient-to-l from-red-500/20 to-transparent' : 'bg-gradient-to-l from-red-400/30 to-transparent'}`} />
       </div>
 
-      <nav className="relative z-20 px-6 py-4 flex items-center gap-4 border-b border-white/10">
-        <button onClick={() => navigate('/')} className="p-2 hover:bg-white/10 rounded-full"><ArrowLeft className="w-5 h-5" /></button>
+      <nav className={`relative z-20 px-6 py-4 flex items-center gap-4 border-b ${theme === 'dark' || panicActive ? 'border-white/10' : 'border-gray-200 bg-white/70 backdrop-blur-xl'}`}>
+        <button onClick={() => navigate('/')} className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}><ArrowLeft className="w-5 h-5" /></button>
         <div>
           <h1 className="font-black text-xl tracking-tight">EMERGENCY</h1>
-          <p className="text-[10px] tracking-[0.2em] text-gray-500">CRITICAL CARE ACCESS</p>
+          <p className={`text-[10px] tracking-[0.2em] ${theme === 'dark' ? 'text-red-300' : 'text-red-600'}`}>CRITICAL CARE ACCESS</p>
         </div>
       </nav>
 
@@ -70,12 +72,12 @@ export default function Emergency() {
           <a href={`tel:${contacts.ambulance}`} className="bg-gray-800 rounded-xl p-4 text-center hover:bg-gray-700 transition-all border border-white/10">
             <Activity className="w-6 h-6 mx-auto mb-2 text-cyan-400" />
             <p className="font-black text-2xl">{contacts.ambulance}</p>
-            <p className="text-[10px] tracking-wider text-gray-500">AMBULANCE</p>
+            <p className="text-[10px] tracking-wider text-cyan-300">AMBULANCE</p>
           </a>
           <a href={`tel:${contacts.police}`} className="bg-gray-800 rounded-xl p-4 text-center hover:bg-gray-700 transition-all border border-white/10">
             <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
             <p className="font-black text-2xl">{contacts.police}</p>
-            <p className="text-[10px] tracking-wider text-gray-500">POLICE</p>
+            <p className="text-[10px] tracking-wider text-yellow-300">POLICE</p>
           </a>
         </div>
 

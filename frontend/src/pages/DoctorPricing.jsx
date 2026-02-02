@@ -121,7 +121,7 @@ const DoctorPricing = () => {
         <header className="p-6">
           <Link 
             to="/" 
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-orange-300 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Home
@@ -137,7 +137,7 @@ const DoctorPricing = () => {
           <h1 className="text-4xl md:text-6xl font-black mb-6">
             Join <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">PulseAI</span> as a Doctor
           </h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-orange-200 max-w-2xl mx-auto mb-8">
             Expand your practice across India, reach more patients, and leverage AI-powered tools to provide better care.
           </p>
 
@@ -148,7 +148,7 @@ const DoctorPricing = () => {
               className={`px-6 py-2 rounded-full transition-all ${
                 billingPeriod === 'monthly'
                   ? 'bg-orange-500 text-white'
-                  : 'text-gray-400 hover:text-white'
+                  : 'text-orange-300 hover:text-white'
               }`}
             >
               Monthly
@@ -158,7 +158,7 @@ const DoctorPricing = () => {
               className={`px-6 py-2 rounded-full transition-all flex items-center gap-2 ${
                 billingPeriod === 'yearly'
                   ? 'bg-orange-500 text-white'
-                  : 'text-gray-400 hover:text-white'
+                  : 'text-orange-300 hover:text-white'
               }`}
             >
               Yearly
@@ -196,14 +196,14 @@ const DoctorPricing = () => {
                       {getPlanIcon(plan.tier)}
                     </div>
                     <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                    <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
+                    <p className="text-orange-200 text-sm mb-6">{plan.description}</p>
 
                     {/* Price */}
                     <div className="mb-8">
                       <span className="text-4xl font-black">
                         {formatCurrency(billingPeriod === 'yearly' ? Math.round(plan.price * 0.8 * 12) : plan.price)}
                       </span>
-                      <span className="text-gray-400">
+                      <span className="text-orange-300">
                         /{billingPeriod === 'yearly' ? 'year' : 'month'}
                       </span>
                       {billingPeriod === 'yearly' && (
@@ -227,13 +227,13 @@ const DoctorPricing = () => {
 
                     {/* Features */}
                     <div className="space-y-4">
-                      <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider">What's included:</p>
+                      <p className="text-sm font-semibold text-orange-300 uppercase tracking-wider">What's included:</p>
                       {plan.features.map((feature, idx) => (
                         <div key={idx} className="flex items-start gap-3">
                           <div className={`mt-0.5 p-1 rounded-full bg-gradient-to-r ${getPlanGradient(plan.tier)}`}>
                             <Check className="w-3 h-3" />
                           </div>
-                          <span className="text-gray-300 text-sm">{feature}</span>
+                          <span className="text-orange-100 text-sm">{feature}</span>
                         </div>
                       ))}
                     </div>
@@ -251,7 +251,7 @@ const DoctorPricing = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/10">
-                  <th className="text-left py-4 px-4 text-gray-400 font-medium">Feature</th>
+                  <th className="text-left py-4 px-4 text-orange-300 font-medium">Feature</th>
                   {plans.map((plan) => (
                     <th key={plan.id} className="text-center py-4 px-4 font-bold">{plan.name}</th>
                   ))}
@@ -276,7 +276,7 @@ const DoctorPricing = () => {
                   </td>
                   {plans.map((plan) => (
                     <td key={plan.id} className="text-center py-4 px-4">
-                      {plan.video_consultation ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-gray-500">—</span>}
+                      {plan.video_consultation ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-orange-300">—</span>}
                     </td>
                   ))}
                 </tr>
@@ -287,7 +287,7 @@ const DoctorPricing = () => {
                   </td>
                   {plans.map((plan) => (
                     <td key={plan.id} className="text-center py-4 px-4">
-                      {plan.ai_assistant ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-gray-500">—</span>}
+                      {plan.ai_assistant ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-orange-300">—</span>}
                     </td>
                   ))}
                 </tr>
@@ -298,7 +298,7 @@ const DoctorPricing = () => {
                   </td>
                   {plans.map((plan) => (
                     <td key={plan.id} className="text-center py-4 px-4">
-                      {plan.analytics_dashboard ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-gray-500">—</span>}
+                      {plan.analytics_dashboard ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-orange-300">—</span>}
                     </td>
                   ))}
                 </tr>
@@ -309,7 +309,7 @@ const DoctorPricing = () => {
                   </td>
                   {plans.map((plan) => (
                     <td key={plan.id} className="text-center py-4 px-4">
-                      {plan.priority_listing ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-gray-500">—</span>}
+                      {plan.priority_listing ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-orange-300">—</span>}
                     </td>
                   ))}
                 </tr>
@@ -320,7 +320,7 @@ const DoctorPricing = () => {
                   </td>
                   {plans.map((plan) => (
                     <td key={plan.id} className="text-center py-4 px-4">
-                      {plan.custom_branding ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-gray-500">—</span>}
+                      {plan.custom_branding ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <span className="text-orange-300">—</span>}
                     </td>
                   ))}
                 </tr>
@@ -333,7 +333,7 @@ const DoctorPricing = () => {
         <div className="max-w-6xl mx-auto px-4 py-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Boost Your Profile</h2>
-            <p className="text-gray-400">Purchase additional perks to stand out from the crowd</p>
+            <p className="text-orange-200">Purchase additional perks to stand out from the crowd</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {perks.map((perk) => (
@@ -345,11 +345,11 @@ const DoctorPricing = () => {
                   {getPerkIcon(perk.icon)}
                 </div>
                 <h3 className="text-lg font-bold mb-2">{perk.name}</h3>
-                <p className="text-gray-400 text-sm mb-4">{perk.description}</p>
+                <p className="text-orange-200 text-sm mb-4">{perk.description}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold">{formatCurrency(perk.price)}</span>
                   {perk.duration_days && (
-                    <span className="text-xs text-gray-500">{perk.duration_days} days</span>
+                    <span className="text-xs text-orange-300">{perk.duration_days} days</span>
                   )}
                 </div>
               </div>
@@ -385,7 +385,7 @@ const DoctorPricing = () => {
             ].map((faq, idx) => (
               <div key={idx} className="bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 p-6">
                 <h4 className="font-bold mb-2">{faq.q}</h4>
-                <p className="text-gray-400 text-sm">{faq.a}</p>
+                <p className="text-orange-200 text-sm">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -395,7 +395,7 @@ const DoctorPricing = () => {
         <div className="max-w-4xl mx-auto px-4 py-20 text-center">
           <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-3xl border border-orange-500/20 p-12">
             <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Practice?</h2>
-            <p className="text-gray-400 mb-8">Join thousands of doctors across India already on PulseAI</p>
+            <p className="text-orange-200 mb-8">Join thousands of doctors across India already on PulseAI</p>
             <button
               onClick={() => plans.length > 0 && handleSelectPlan(plans.find(p => p.is_popular) || plans[1])}
               className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-500/30"
@@ -407,7 +407,7 @@ const DoctorPricing = () => {
 
         {/* Footer */}
         <footer className="border-t border-white/10 py-8 px-4">
-          <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm">
+          <div className="max-w-6xl mx-auto text-center text-orange-300 text-sm">
             © 2026 PulseAI India. All rights reserved. | Made with ❤️ in India
           </div>
         </footer>

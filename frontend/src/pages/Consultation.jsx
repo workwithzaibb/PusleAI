@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Send, Bot, User, Globe, Zap } from 'lucide-react';
 import { startConsultation, sendMessage, endConsultation } from '../api';
 import ElevenLabsAgent from '../components/ElevenLabsAgent';
+import { useTheme } from '../contexts/ThemeContext';
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -53,28 +54,30 @@ export default function Consultation() {
     navigate('/');
   };
 
+  const { theme } = useTheme();
+
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col relative overflow-hidden">
+    <div className={`min-h-screen flex flex-col relative overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-black text-white' : 'bg-gradient-to-br from-slate-50 via-cyan-50 to-blue-50 text-gray-900'}`}>
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/4 -right-20 w-[400px] h-[400px] bg-gradient-to-l from-cyan-500/20 to-transparent rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -left-20 w-[300px] h-[300px] bg-gradient-to-r from-blue-500/20 to-transparent rounded-full blur-3xl animate-pulse" />
+        <div className={`absolute top-1/4 -right-20 w-[400px] h-[400px] rounded-full blur-3xl animate-pulse ${theme === 'dark' ? 'bg-gradient-to-l from-cyan-500/20 to-transparent' : 'bg-gradient-to-l from-cyan-400/30 to-transparent'}`} />
+        <div className={`absolute bottom-1/4 -left-20 w-[300px] h-[300px] rounded-full blur-3xl animate-pulse ${theme === 'dark' ? 'bg-gradient-to-r from-blue-500/20 to-transparent' : 'bg-gradient-to-r from-blue-400/30 to-transparent'}`} />
       </div>
 
       {/* Header */}
-      <nav className="relative z-20 px-6 py-4 flex items-center justify-between border-b border-white/10">
+      <nav className={`relative z-20 px-6 py-4 flex items-center justify-between border-b ${theme === 'dark' ? 'border-white/10' : 'border-gray-200 bg-white/70 backdrop-blur-xl'}`}>
         <div className="flex items-center gap-4">
-          <button onClick={handleEnd} className="p-2 hover:bg-white/10 rounded-full"><ArrowLeft className="w-5 h-5" /></button>
+          <button onClick={handleEnd} className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}><ArrowLeft className="w-5 h-5" /></button>
           <div>
             <h1 className="font-black text-xl tracking-tight flex items-center gap-2">AI DOCTOR <Zap className="w-5 h-5 text-cyan-400" /></h1>
-            <p className="text-[10px] tracking-[0.2em] text-gray-500">SESSION #{sessionId?.slice(0, 8) || '...'}</p>
+            <p className={`text-[10px] tracking-[0.2em] ${theme === 'dark' ? 'text-cyan-300' : 'text-cyan-600'}`}>SESSION #{sessionId?.slice(0, 8) || '...'}</p>
           </div>
         </div>
         <div className="relative">
-          <button onClick={() => setShowLang(!showLang)} className="px-3 py-2 bg-gray-800 rounded-lg flex items-center gap-2 hover:bg-gray-700">
+          <button onClick={() => setShowLang(!showLang)} className={`px-3 py-2 rounded-lg flex items-center gap-2 ${theme === 'dark' ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white border border-gray-200 hover:bg-gray-50'}`}>
             <Globe className="w-4 h-4" /> {LANGUAGES.find(l => l.code === language)?.flag}
           </button>
           {showLang && (
-            <div className="absolute right-0 top-full mt-2 bg-gray-900 rounded-xl border border-white/10 overflow-hidden z-30">
+            <div className={`absolute right-0 top-full mt-2 rounded-xl border overflow-hidden z-30 ${theme === 'dark' ? 'bg-gray-900 border-white/10' : 'bg-white border-gray-200 shadow-lg'}`}>
               {LANGUAGES.map(l => (
                 <button key={l.code} onClick={() => { setLanguage(l.code); setShowLang(false); setMessages([]); setTimeout(startNew, 100); }}
                   className={`w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-800 ${language === l.code ? 'bg-cyan-500/20' : ''}`}>
@@ -141,7 +144,7 @@ export default function Consultation() {
             <div className="flex gap-2 mt-3">
               {['Headache', 'Fever', 'Cough', 'Stomach pain'].map(s => (
                 <button key={s} onClick={() => setInput(prev => prev ? `${prev}, ${s}` : s)}
-                  className="px-3 py-1 bg-gray-800 text-gray-400 text-xs rounded-full hover:bg-cyan-500/20 hover:text-cyan-400">{s}</button>
+                  className="px-3 py-1 bg-gray-800 text-cyan-300 text-xs rounded-full hover:bg-cyan-500/20 hover:text-cyan-400">{s}</button>
               ))}
             </div>
           </div>

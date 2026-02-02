@@ -20,6 +20,7 @@ import {
   Loader2
 } from 'lucide-react';
 import api from '../api';
+import { useTheme } from '../contexts/ThemeContext';
 
 const PrescriptionScanner = () => {
   const [activeTab, setActiveTab] = useState('upload'); // 'upload' or 'manual'
@@ -31,6 +32,7 @@ const PrescriptionScanner = () => {
   const [error, setError] = useState('');
   const [searchMedicine, setSearchMedicine] = useState('');
   const [searchResults, setSearchResults] = useState(null);
+  const { theme } = useTheme();
   
   const fileInputRef = useRef(null);
 
@@ -124,12 +126,12 @@ const PrescriptionScanner = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'bg-black text-white' : 'bg-gradient-to-br from-slate-50 via-green-50 to-cyan-50 text-gray-900'}`}>
       {/* Animated Background */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-black to-cyan-900/20" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-gradient-to-br from-green-900/20 via-black to-cyan-900/20' : 'bg-transparent'}`} />
+        <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse ${theme === 'dark' ? 'bg-green-500/10' : 'bg-green-400/20'}`} />
+        <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse ${theme === 'dark' ? 'bg-cyan-500/10' : 'bg-cyan-400/20'}`} style={{ animationDelay: '1s' }} />
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
@@ -137,7 +139,7 @@ const PrescriptionScanner = () => {
         <div className="flex items-center justify-between mb-8">
           <Link 
             to="/dashboard" 
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+            className={`inline-flex items-center gap-2 transition-colors ${theme === 'dark' ? 'text-cyan-300 hover:text-white' : 'text-cyan-600 hover:text-cyan-700'}`}
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Dashboard
@@ -146,14 +148,14 @@ const PrescriptionScanner = () => {
 
         {/* Hero */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 mb-6">
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 ${theme === 'dark' ? 'bg-green-500/10 border-green-500/20' : 'bg-green-100 border-green-200'}`}>
             <Sparkles className="w-4 h-4 text-green-500" />
-            <span className="text-green-500 text-sm font-medium">AI-Powered Medicine Analysis</span>
+            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-green-500' : 'text-green-600'}`}>AI-Powered Medicine Analysis</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black mb-4">
             Prescription <span className="bg-gradient-to-r from-green-500 to-cyan-500 bg-clip-text text-transparent">Scanner</span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className={`text-xl max-w-2xl mx-auto ${theme === 'dark' ? 'text-cyan-200/80' : 'text-cyan-700'}`}>
             Upload your prescription and discover cheaper generic alternatives. Save up to 70% on medicines!
           </p>
         </div>
@@ -162,13 +164,13 @@ const PrescriptionScanner = () => {
           <>
             {/* Tab Switcher */}
             <div className="flex justify-center mb-8">
-              <div className="inline-flex p-1 bg-white/5 rounded-xl">
+              <div className={`inline-flex p-1 rounded-xl ${theme === 'dark' ? 'bg-white/5' : 'bg-white shadow-md border border-gray-200'}`}>
                 <button
                   onClick={() => setActiveTab('upload')}
                   className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2 ${
                     activeTab === 'upload' 
                       ? 'bg-green-500 text-white' 
-                      : 'text-gray-400 hover:text-white'
+                      : (theme === 'dark' ? 'text-green-300 hover:text-white' : 'text-green-600 hover:text-green-700')
                   }`}
                 >
                   <Camera className="w-5 h-5" />
@@ -179,7 +181,7 @@ const PrescriptionScanner = () => {
                   className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2 ${
                     activeTab === 'manual' 
                       ? 'bg-green-500 text-white' 
-                      : 'text-gray-400 hover:text-white'
+                      : (theme === 'dark' ? 'text-green-300 hover:text-white' : 'text-green-600 hover:text-green-700')
                   }`}
                 >
                   <FileText className="w-5 h-5" />
@@ -195,7 +197,7 @@ const PrescriptionScanner = () => {
                   onClick={() => fileInputRef.current?.click()}
                   onDrop={handleDrop}
                   onDragOver={handleDragOver}
-                  className="border-2 border-dashed border-white/20 rounded-3xl p-12 text-center cursor-pointer hover:border-green-500/50 transition-all bg-white/5 backdrop-blur-lg"
+                  className={`border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all backdrop-blur-lg ${theme === 'dark' ? 'border-white/20 hover:border-green-500/50 bg-white/5' : 'border-gray-300 hover:border-green-500 bg-white shadow-md'}`}
                 >
                   {preview ? (
                     <div className="relative">
@@ -217,10 +219,10 @@ const PrescriptionScanner = () => {
                         <Upload className="w-10 h-10 text-green-500" />
                       </div>
                       <h3 className="text-xl font-bold mb-2">Upload Prescription</h3>
-                      <p className="text-gray-400 mb-4">
+                      <p className="text-green-300/80 mb-4">
                         Drag & drop your prescription image or click to browse
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-green-300/70">
                         Supports: JPG, PNG, PDF (Max 10MB)
                       </p>
                     </>
@@ -240,7 +242,7 @@ const PrescriptionScanner = () => {
                       <Image className="w-5 h-5 text-green-500" />
                       <span className="text-sm">{file.name}</span>
                     </div>
-                    <span className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</span>
+                    <span className="text-xs text-green-300/70">{(file.size / 1024).toFixed(1)} KB</span>
                   </div>
                 )}
               </div>
@@ -251,7 +253,7 @@ const PrescriptionScanner = () => {
               <div className="max-w-2xl mx-auto">
                 <div className="bg-white/5 backdrop-blur-lg rounded-3xl p-8 border border-white/10">
                   <h3 className="text-xl font-bold mb-4">Enter Medicine Names</h3>
-                  <p className="text-gray-400 text-sm mb-4">
+                  <p className="text-green-300/80 text-sm mb-4">
                     Type or paste your prescription text. Include medicine names as they appear.
                   </p>
                   <textarea
@@ -332,11 +334,11 @@ const PrescriptionScanner = () => {
                           <CheckCircle className="w-5 h-5 text-green-500" />
                           <span className="font-bold">{searchResults.original_medicine}</span>
                         </div>
-                        <p className="text-sm text-gray-400 mb-2">Generic: {searchResults.generic_name}</p>
-                        <p className="text-sm text-gray-400 mb-3">Category: {searchResults.category}</p>
-                        <p className="text-sm text-gray-400 mb-2">Brand Price: {searchResults.brand_price}</p>
+                        <p className="text-sm text-cyan-300 mb-2">Generic: {searchResults.generic_name}</p>
+                        <p className="text-sm text-cyan-300 mb-3">Category: {searchResults.category}</p>
+                        <p className="text-sm text-cyan-300 mb-2">Brand Price: {searchResults.brand_price}</p>
                         <div className="mt-3">
-                          <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Alternatives:</p>
+                          <p className="text-xs text-cyan-400/80 uppercase tracking-wider mb-2">Alternatives:</p>
                           {searchResults.alternatives.map((alt, idx) => (
                             <div key={idx} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                               <span className="text-sm">{alt.name}</span>
@@ -353,7 +355,7 @@ const PrescriptionScanner = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 text-gray-400">
+                      <div className="flex items-center gap-2 text-cyan-300">
                         <AlertCircle className="w-5 h-5" />
                         <span>{searchResults.message}</span>
                       </div>
@@ -371,7 +373,7 @@ const PrescriptionScanner = () => {
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div>
                   <h2 className="text-2xl font-bold mb-2">Analysis Complete!</h2>
-                  <p className="text-gray-400">
+                  <p className="text-cyan-300">
                     Found <span className="text-green-400 font-bold">{results.medicines_found.length}</span> medicines with alternatives
                   </p>
                 </div>
@@ -380,7 +382,7 @@ const PrescriptionScanner = () => {
                     <TrendingDown className="w-10 h-10" />
                     {results.total_potential_savings}%
                   </div>
-                  <p className="text-gray-400 text-sm">Potential Savings</p>
+                  <p className="text-cyan-300 text-sm">Potential Savings</p>
                 </div>
               </div>
             </div>
@@ -391,7 +393,7 @@ const PrescriptionScanner = () => {
                 <h3 className="font-bold mb-4">💡 Recommendations</h3>
                 <div className="space-y-2">
                   {results.recommendations.map((rec, idx) => (
-                    <p key={idx} className="text-gray-300">{rec}</p>
+                    <p key={idx} className="text-cyan-200">{rec}</p>
                   ))}
                 </div>
               </div>
@@ -422,7 +424,7 @@ const PrescriptionScanner = () => {
                     </div>
 
                     {/* Category & Price */}
-                    <div className="flex items-center gap-4 mb-4 text-sm text-gray-400">
+                    <div className="flex items-center gap-4 mb-4 text-sm text-cyan-300">
                       <span className="px-2 py-1 bg-white/10 rounded">{medicine.category}</span>
                       <span className="flex items-center gap-1">
                         <IndianRupee className="w-3 h-3" />
@@ -432,7 +434,7 @@ const PrescriptionScanner = () => {
 
                     {/* Alternatives */}
                     <div className="space-y-3">
-                      <p className="text-xs text-gray-500 uppercase tracking-wider">Cheaper Alternatives:</p>
+                      <p className="text-xs text-cyan-400 uppercase tracking-wider">Cheaper Alternatives:</p>
                       {medicine.alternatives.slice(0, 3).map((alt, altIdx) => (
                         <div 
                           key={altIdx}
@@ -441,7 +443,7 @@ const PrescriptionScanner = () => {
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="font-medium">{alt.name}</p>
-                              <p className="text-xs text-gray-500">{alt.manufacturer}</p>
+                              <p className="text-xs text-cyan-400">{alt.manufacturer}</p>
                             </div>
                             <div className="text-right">
                               <p className="text-green-400 font-bold">{alt.price}</p>
@@ -466,23 +468,23 @@ const PrescriptionScanner = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold mb-2">🏪 Jan Aushadhi Kendras</h3>
-                  <p className="text-gray-400 mb-4">
+                  <p className="text-cyan-300 mb-4">
                     Get quality generic medicines at 50-90% lower prices from government stores!
                   </p>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                    <div className="flex items-center gap-2 text-sm text-cyan-200">
                       <CheckCircle className="w-4 h-4 text-green-500" />
                       10,000+ stores across India
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                    <div className="flex items-center gap-2 text-sm text-cyan-200">
                       <CheckCircle className="w-4 h-4 text-green-500" />
                       WHO-GMP certified quality
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                    <div className="flex items-center gap-2 text-sm text-cyan-200">
                       <CheckCircle className="w-4 h-4 text-green-500" />
                       1800+ medicines available
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                    <div className="flex items-center gap-2 text-sm text-cyan-200">
                       <CheckCircle className="w-4 h-4 text-green-500" />
                       Just need valid prescription
                     </div>
@@ -528,7 +530,7 @@ const PrescriptionScanner = () => {
         )}
 
         {/* Disclaimer */}
-        <div className="mt-12 text-center text-sm text-gray-500">
+        <div className="mt-12 text-center text-sm text-cyan-300">
           <p>⚠️ Always consult your doctor before switching medicines. This tool is for informational purposes only.</p>
         </div>
       </div>

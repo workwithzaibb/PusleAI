@@ -60,7 +60,7 @@ const MOOD_CONFIG = {
   fearful: { emoji: '😨', icon: AlertTriangle, color: 'text-purple-400', bg: 'bg-purple-500/20', label: 'Anxious' },
   disgusted: { emoji: '🤢', icon: Meh, color: 'text-green-400', bg: 'bg-green-500/20', label: 'Disgusted' },
   surprised: { emoji: '😲', icon: Heart, color: 'text-pink-400', bg: 'bg-pink-500/20', label: 'Surprised' },
-  neutral: { emoji: '😐', icon: Meh, color: 'text-gray-400', bg: 'bg-gray-500/20', label: 'Neutral' },
+  neutral: { emoji: '😐', icon: Meh, color: 'text-slate-300', bg: 'bg-slate-500/20', label: 'Neutral' },
 };
 
 // Error Boundary to prevent blank page on crash
@@ -84,7 +84,7 @@ class ErrorBoundary extends Component {
         <div className="bg-gray-900 border border-red-500/30 rounded-2xl p-6 text-center min-h-[400px] flex flex-col items-center justify-center">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
           <h3 className="font-semibold text-red-400 mb-2">Video Call Unavailable</h3>
-          <p className="text-gray-400 text-sm mb-4 max-w-xs">
+          <p className="text-cyan-300 text-sm mb-4 max-w-xs">
             {this.state.error?.message || 'The video call feature encountered an error. You can still use the text chat below.'}
           </p>
           <button 
@@ -96,7 +96,7 @@ class ErrorBoundary extends Component {
           >
             Reload & Try Again
           </button>
-          <p className="text-gray-500 text-xs mt-4">
+          <p className="text-cyan-400 text-xs mt-4">
             Use the text chat on the right to continue your consultation
           </p>
         </div>
@@ -874,7 +874,7 @@ function ElevenLabsAgentInner({ language = 'en' }) {
             <h2 className="text-xl font-bold text-white mb-1">
               {language === 'hi' ? 'डॉ. माया से बात करें' : 'Connect with Dr. Maya'}
             </h2>
-            <p className="text-gray-400 text-sm">
+            <p className="text-cyan-300 text-sm">
               AI Health Consultant • 🌐 {getLanguageName(language)}
             </p>
           </div>
@@ -891,7 +891,7 @@ function ElevenLabsAgentInner({ language = 'en' }) {
           {/* Cancel Button */}
           <button
             onClick={cancelCameraPreview}
-            className="w-full mt-3 px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm"
+            className="w-full mt-3 px-4 py-2 text-cyan-300 hover:text-white transition-colors text-sm"
           >
             Cancel
           </button>
@@ -909,7 +909,7 @@ function ElevenLabsAgentInner({ language = 'en' }) {
           <h2 className="text-xl font-bold text-white mb-2">
             {language === 'hi' ? 'डॉ. माया से जुड़ रहे हैं...' : 'Connecting to Dr. Maya...'}
           </h2>
-          <p className="text-gray-400 text-sm mb-2">Please wait...</p>
+          <p className="text-cyan-300 text-sm mb-2">Please wait...</p>
           <p className="text-blue-400 text-xs">Status: {connectionStatus}</p>
         </div>
       </div>
@@ -952,8 +952,8 @@ function ElevenLabsAgentInner({ language = 'en' }) {
           />
           {!cameraOn && (
             <div className="w-full h-full flex flex-col items-center justify-center bg-gray-800">
-              <VideoOff className="w-10 h-10 text-gray-500 mb-2" />
-              <span className="text-gray-500 text-xs">Camera Off</span>
+              <VideoOff className="w-10 h-10 text-cyan-400 mb-2" />
+              <span className="text-cyan-300 text-xs">Camera Off</span>
             </div>
           )}
           
@@ -1002,7 +1002,7 @@ function ElevenLabsAgentInner({ language = 'en' }) {
           <div className="flex items-center gap-2">
             <div className={`w-2.5 h-2.5 rounded-full ${isSpeaking ? 'bg-green-400 animate-pulse' : 'bg-green-500'}`} />
             <span className="text-white font-medium">Dr. Maya</span>
-            <span className="text-gray-400 text-xs">
+            <span className="text-cyan-300 text-xs">
               {isSpeaking ? '• Speaking' : isListening ? '• Listening' : isProcessing ? '• Thinking...' : '• Ready'}
             </span>
           </div>
@@ -1128,7 +1128,7 @@ function ElevenLabsAgentInner({ language = 'en' }) {
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{MOOD_CONFIG[currentMood]?.emoji || '😐'}</span>
                   <div>
-                    <p className={`font-semibold ${MOOD_CONFIG[currentMood]?.color || 'text-gray-400'}`}>
+                    <p className={`font-semibold ${MOOD_CONFIG[currentMood]?.color || 'text-slate-300'}`}>
                       {MOOD_CONFIG[currentMood]?.label || 'Unknown'}
                     </p>
                     <p className="text-xs text-white/50">
@@ -1181,7 +1181,7 @@ function ElevenLabsAgentInner({ language = 'en' }) {
         <h2 className="text-2xl font-bold text-white mb-2">
           {language === 'hi' ? 'डॉ. माया' : 'Dr. Maya'}
         </h2>
-        <p className="text-gray-400 mb-2">
+        <p className="text-cyan-300 mb-2">
           {language === 'hi' ? 'AI स्वास्थ्य सलाहकार' : 'AI Health Consultant'}
         </p>
         <p className="text-blue-400 text-sm mb-4">
@@ -1190,12 +1190,12 @@ function ElevenLabsAgentInner({ language = 'en' }) {
         
         {/* Permission info */}
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 max-w-xs mx-auto">
-          <p className="text-gray-300 text-sm flex items-center justify-center gap-2 mb-2">
+          <p className="text-cyan-200 text-sm flex items-center justify-center gap-2 mb-2">
             <Camera className="w-4 h-4" />
             <Mic className="w-4 h-4" />
             Camera & Microphone Required
           </p>
-          <p className="text-gray-500 text-xs">
+          <p className="text-cyan-300 text-xs">
             Allow access for video consultation
           </p>
         </div>
@@ -1212,13 +1212,13 @@ function ElevenLabsAgentInner({ language = 'en' }) {
         {/* Skip Camera Option */}
         <button
           onClick={startConversation}
-          className="text-gray-400 hover:text-white transition-colors text-sm"
+          className="text-cyan-300 hover:text-white transition-colors text-sm"
         >
           Continue without camera →
         </button>
         
         {/* Tip */}
-        <p className="text-gray-500 text-xs mt-4 max-w-xs mx-auto">
+        <p className="text-cyan-300 text-xs mt-4 max-w-xs mx-auto">
           💡 Make sure your camera and microphone are not being used by another app
         </p>
       </div>

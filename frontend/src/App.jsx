@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Home from './pages/Home';
@@ -13,6 +14,12 @@ import DoctorPricing from './pages/DoctorPricing';
 import DoctorRegister from './pages/DoctorRegister';
 import PrescriptionScanner from './pages/PrescriptionScanner';
 import QueensHealth from './pages/QueensHealth';
+import PCOSManagement from './pages/queens/PCOSManagement';
+import MaternalHealth from './pages/queens/MaternalHealth';
+import AnemiaManagement from './pages/queens/AnemiaManagement';
+import MentalWellbeing from './pages/queens/MentalWellbeing';
+import DietManagement from './pages/queens/DietManagement';
+import PeriodTracker from './pages/queens/PeriodTracker';
 import HealthCursor from './components/HealthCursor';
 
 function ProtectedRoute({ children }) {
@@ -41,7 +48,7 @@ function ProtectedRoute({ children }) {
         {/* Loading text */}
         <div className="text-center">
           <h2 className="text-xl font-bold animate-gradient-text">PulseAI</h2>
-          <p className="text-gray-500 text-sm animate-pulse">Loading your health companion...</p>
+          <p className="text-cyan-300 text-sm animate-pulse">Loading your health companion...</p>
         </div>
         
         {/* Bouncing dots */}
@@ -62,8 +69,9 @@ function ProtectedRoute({ children }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <HealthCursor />
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -81,8 +89,15 @@ export default function App() {
           <Route path="/doctor-register" element={<ProtectedRoute><DoctorRegister /></ProtectedRoute>} />
           <Route path="/prescription-scanner" element={<ProtectedRoute><PrescriptionScanner /></ProtectedRoute>} />
           <Route path="/queens" element={<ProtectedRoute><QueensHealth /></ProtectedRoute>} />
+          <Route path="/queens/pcos" element={<ProtectedRoute><PCOSManagement /></ProtectedRoute>} />
+          <Route path="/queens/maternal" element={<ProtectedRoute><MaternalHealth /></ProtectedRoute>} />
+          <Route path="/queens/anemia" element={<ProtectedRoute><AnemiaManagement /></ProtectedRoute>} />
+          <Route path="/queens/mental" element={<ProtectedRoute><MentalWellbeing /></ProtectedRoute>} />
+          <Route path="/queens/diet" element={<ProtectedRoute><DietManagement /></ProtectedRoute>} />
+          <Route path="/queens/period" element={<ProtectedRoute><PeriodTracker /></ProtectedRoute>} />
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

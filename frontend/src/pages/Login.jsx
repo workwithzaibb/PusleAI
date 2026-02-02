@@ -51,28 +51,28 @@ export default function Login() {
             <span className="text-3xl font-black tracking-tighter">PULSE<span className="text-cyan-400">AI</span></span>
           </div>
           <h1 className="text-4xl font-black">{isRegister ? 'JOIN US' : 'WELCOME'}</h1>
-          <p className="text-gray-500 text-xs tracking-[0.3em] mt-2">YOUR HEALTH. YOUR RULES.</p>
+          <p className="text-cyan-300 text-xs tracking-[0.3em] mt-2">YOUR HEALTH. YOUR RULES.</p>
         </div>
 
         <div className="bg-gray-900 rounded-2xl p-8 border border-white/10">
           <form onSubmit={handleSubmit} className="space-y-4">
             {isRegister && (
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400" />
                 <input type="text" placeholder="FULL NAME" value={name} onChange={e => setName(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 bg-black border border-white/10 rounded-xl text-white placeholder-gray-600 focus:border-cyan-500 text-sm tracking-wide" required />
               </div>
             )}
             <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400" />
               <input type="tel" placeholder="PHONE NUMBER" value={phone} onChange={e => setPhone(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 bg-black border border-white/10 rounded-xl text-white placeholder-gray-600 focus:border-cyan-500 text-sm tracking-wide" required />
             </div>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400" />
               <input type={showPass ? 'text' : 'password'} placeholder="PASSWORD" value={password} onChange={e => setPassword(e.target.value)}
                 className="w-full pl-12 pr-14 py-4 bg-black border border-white/10 rounded-xl text-white placeholder-gray-600 focus:border-cyan-500 text-sm tracking-wide" required />
-              <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white">
+              <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-cyan-400 hover:text-white">
                 {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
@@ -82,7 +82,7 @@ export default function Login() {
               {loading ? <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" /> : <>{isRegister ? 'CREATE ACCOUNT' : 'LOGIN'} <ArrowRight className="w-5 h-5" /></>}
             </button>
           </form>
-          <p className="mt-6 text-center text-gray-500 text-sm">
+          <p className="mt-6 text-center text-cyan-300 text-sm">
             {isRegister ? 'Have an account?' : 'No account?'}
             <button onClick={() => setIsRegister(!isRegister)} className="text-cyan-400 font-bold ml-2">{isRegister ? 'LOGIN' : 'REGISTER'}</button>
           </p>

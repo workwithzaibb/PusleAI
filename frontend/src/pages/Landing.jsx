@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, Brain, Pill, Stethoscope, Phone, Activity, Shield, Zap, ChevronRight, Star, Users, Clock, ArrowRight, Sparkles } from 'lucide-react';
 import { useAuth } from '../AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Landing = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -11,6 +12,7 @@ const Landing = () => {
   const heroRef = useRef(null);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const fullText = 'REIMAGINED.';
 
@@ -89,19 +91,19 @@ const Landing = () => {
   ];
 
   const testimonials = [
-    { name: 'Sarah M.', role: 'Patient', text: 'PulseAI saved my life with its emergency detection feature. Absolutely incredible!', rating: 5 },
-    { name: 'Dr. James K.', role: 'Physician', text: 'As a doctor, I recommend PulseAI to all my patients for health monitoring.', rating: 5 },
-    { name: 'Michael R.', role: 'Caregiver', text: 'Managing medications for my parents has never been easier. Game changer!', rating: 5 },
+    { name: 'Priya S.', role: 'Patient', text: 'PulseAI saved my life with its emergency detection feature. Absolutely incredible!', rating: 5 },
+    { name: 'Dr. Arjun K.', role: 'Physician', text: 'As a doctor, I recommend PulseAI to all my patients for health monitoring.', rating: 5 },
+    { name: 'Rahul M.', role: 'Caregiver', text: 'Managing medications for my parents has never been easier. Game changer!', rating: 5 },
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+    <div className={`min-h-screen overflow-x-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-black text-white' : 'bg-gradient-to-br from-slate-50 via-cyan-50 to-purple-50 text-gray-900'}`}>
       {/* Animated Background with Mouse Parallax */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
+        <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-gradient-to-br from-black via-gray-900 to-black' : 'bg-transparent'}`} />
         
         {/* Animated Grid */}
-        <div className="absolute inset-0 opacity-20">
+        <div className={`absolute inset-0 ${theme === 'dark' ? 'opacity-20' : 'opacity-10'}`}>
           <div className="absolute inset-0" style={{
             backgroundImage: `linear-gradient(rgba(0,217,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,217,255,0.1) 1px, transparent 1px)`,
             backgroundSize: '60px 60px',
@@ -116,7 +118,7 @@ const Landing = () => {
           style={{ 
             left: '20%', 
             top: '10%',
-            background: 'radial-gradient(circle, rgba(0,217,255,0.15) 0%, transparent 70%)',
+            background: `radial-gradient(circle, rgba(0,217,255,${theme === 'dark' ? '0.15' : '0.2'}) 0%, transparent 70%)`,
             transform: `translate(${mousePos.x * 0.02}px, ${mousePos.y * 0.02 + scrollY * 0.3}px)`,
           }}
         />
@@ -125,7 +127,7 @@ const Landing = () => {
           style={{ 
             right: '10%', 
             top: '40%',
-            background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)',
+            background: `radial-gradient(circle, rgba(139,92,246,${theme === 'dark' ? '0.15' : '0.2'}) 0%, transparent 70%)`,
             transform: `translate(${mousePos.x * -0.015}px, ${mousePos.y * -0.015 + scrollY * -0.2}px)`,
           }}
         />
@@ -134,13 +136,13 @@ const Landing = () => {
           style={{ 
             left: '50%', 
             bottom: '10%',
-            background: 'radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%)',
+            background: `radial-gradient(circle, rgba(236,72,153,${theme === 'dark' ? '0.1' : '0.15'}) 0%, transparent 70%)`,
             transform: `translate(${mousePos.x * 0.01}px, ${mousePos.y * 0.01}px)`,
           }}
         />
 
         {/* Interactive Antigravity Particles - Fade from cursor */}
-        {particles.map((particle) => {
+        {theme === 'dark' && particles.map((particle) => {
           const particleX = (particle.left / 100) * (typeof window !== 'undefined' ? window.innerWidth : 1920);
           const dx = mousePos.x - particleX;
           const dy = mousePos.y - (typeof window !== 'undefined' ? window.innerHeight * 0.5 : 540);
@@ -173,7 +175,7 @@ const Landing = () => {
       </div>
 
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrollY > 50 ? 'bg-black/80 backdrop-blur-xl border-b border-white/10' : ''}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrollY > 50 ? (theme === 'dark' ? 'bg-black/80 backdrop-blur-xl border-b border-white/10' : 'bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-md') : ''}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 group">
             <div className="relative">
@@ -192,7 +194,7 @@ const Landing = () => {
               <a 
                 key={item}
                 href={`#${item.toLowerCase()}`} 
-                className="relative text-gray-400 hover:text-white transition-colors group"
+                className={`relative transition-colors group ${theme === 'dark' ? 'text-cyan-300 hover:text-white' : 'text-cyan-600 hover:text-cyan-700'}`}
               >
                 {item}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300" />
@@ -215,7 +217,7 @@ const Landing = () => {
           {/* Animated Badge */}
           <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full animate-slide-down overflow-hidden group hover:border-cyan-500/50 transition-colors">
             <Sparkles className="w-4 h-4 text-cyan-400 animate-spin-slow" />
-            <span className="text-sm text-gray-400">AI-Powered Healthcare Revolution</span>
+            <span className="text-sm text-cyan-400">AI-Powered Healthcare Revolution</span>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
           </div>
           
@@ -234,7 +236,7 @@ const Landing = () => {
           </h1>
           
           {/* Subtitle with Reveal */}
-          <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '1s' }}>
+          <p className="text-xl md:text-2xl text-cyan-200/80 max-w-3xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '1s' }}>
             Experience the future of healthcare with AI-powered consultations, 
             smart medication management, and 24/7 emergency support.
           </p>
@@ -318,7 +320,7 @@ const Landing = () => {
                     <feature.icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold mb-3 group-hover:text-cyan-400 transition-colors">{feature.title}</h3>
-                  <p className="text-gray-400 group-hover:text-gray-300 transition-colors">{feature.desc}</p>
+                  <p className="text-cyan-200/80 group-hover:text-cyan-100 transition-colors">{feature.desc}</p>
                   <div className="mt-6 flex items-center gap-2 text-cyan-400 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                     <span className="font-bold">Learn more</span>
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -353,7 +355,7 @@ const Landing = () => {
                 <div className="text-5xl md:text-7xl font-black bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">
                   {stat.value}
                 </div>
-                <div className="text-gray-400 mt-2 uppercase tracking-wider text-sm">{stat.label}</div>
+                <div className="text-cyan-300/80 mt-2 uppercase tracking-wider text-sm">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -396,7 +398,7 @@ const Landing = () => {
                   </div>
                   <div>
                     <div className="font-bold">{testimonial.name}</div>
-                    <div className="text-gray-500 text-sm">{testimonial.role}</div>
+                    <div className="text-cyan-400/80 text-sm">{testimonial.role}</div>
                   </div>
                 </div>
 
@@ -419,7 +421,7 @@ const Landing = () => {
             <h2 className="relative text-4xl md:text-6xl font-black tracking-tighter mb-6">
               READY TO <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient-x bg-[length:200%_auto]">START</span>?
             </h2>
-            <p className="relative text-xl text-gray-400 mb-10">
+            <p className="relative text-xl text-cyan-200/80 mb-10">
               Join thousands of users who trust PulseAI for their healthcare needs.
             </p>
             <Link 
@@ -446,7 +448,7 @@ const Landing = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-white">Are you a healthcare professional?</h3>
-                <p className="text-gray-400">Join PulseAI and expand your practice with AI-powered tools</p>
+                <p className="text-cyan-200/80">Join PulseAI and expand your practice with AI-powered tools</p>
               </div>
             </div>
             <Link 
@@ -467,7 +469,7 @@ const Landing = () => {
             <Heart className="w-8 h-8 text-cyan-400 group-hover:animate-heartbeat" />
             <span className="text-xl font-black">PULSE<span className="text-cyan-400">AI</span></span>
           </div>
-          <div className="text-gray-500 text-sm text-center md:text-left">
+          <div className="text-cyan-300/70 text-sm text-center md:text-left">
             © 2026 PulseAI India. All rights reserved. | Made with ❤️ in India
           </div>
         </div>

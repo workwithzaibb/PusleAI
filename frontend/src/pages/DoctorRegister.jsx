@@ -224,10 +224,10 @@ const DoctorRegister = () => {
             <Check className="w-10 h-10 text-green-500" />
           </div>
           <h2 className="text-2xl font-bold text-white mb-4">Registration Successful!</h2>
-          <p className="text-gray-400 mb-6">
+          <p className="text-cyan-300 mb-6">
             Welcome to PulseAI! Your doctor profile has been created and your {selectedPlan?.name} subscription is now active.
           </p>
-          <p className="text-sm text-gray-500">Redirecting to dashboard...</p>
+          <p className="text-sm text-cyan-400">Redirecting to dashboard...</p>
         </div>
       </div>
     );
@@ -247,7 +247,7 @@ const DoctorRegister = () => {
         <div className="mb-8">
           <Link 
             to="/doctor-pricing" 
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-cyan-300 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Plans
