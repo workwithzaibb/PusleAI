@@ -16,26 +16,59 @@ const LANGUAGES = [
 const LANGUAGE_UI = {
   en: {
     fallbackGreeting: 'Hello! I am your AI Health Assistant.',
-    retryMessage: 'Sorry, please try again.',
     placeholder: 'Describe your symptoms...',
     quickSymptoms: ['Headache', 'Fever', 'Cough', 'Stomach pain'],
     emergencyLabel: 'EMERGENCY'
   },
   hi: {
     fallbackGreeting: 'नमस्ते! मैं आपकी AI स्वास्थ्य सहायक हूं।',
-    retryMessage: 'माफ़ कीजिए, कृपया फिर से कोशिश करें।',
     placeholder: 'अपने लक्षण बताएं...',
     quickSymptoms: ['सिर दर्द', 'बुखार', 'खांसी', 'पेट दर्द'],
     emergencyLabel: 'आपातकाल'
   },
   mr: {
     fallbackGreeting: 'नमस्कार! मी तुमची AI आरोग्य सहाय्यक आहे.',
-    retryMessage: 'माफ करा, कृपया पुन्हा प्रयत्न करा.',
     placeholder: 'तुमची लक्षणे सांगा...',
     quickSymptoms: ['डोकेदुखी', 'ताप', 'खोकला', 'पोटदुखी'],
     emergencyLabel: 'आपत्कालीन'
   }
 };
+
+const EMERGENCY_REGEX = /(chest pain|difficulty breathing|can\'t breathe|unconscious|stroke|heart attack|severe pain|suicide|self harm|सीने में दर्द|सांस|बेहोश|आत्महत्या|छाती|छातीत|श्वास|बेशुद्ध|आत्महत्य)/i;
+
+function buildContextualFallback(language, userMessage, chatHistory = []) {
+  const lowered = (userMessage || '').toLowerCase();
+  const latestAi = [...chatHistory].reverse().find(m => m.type === 'ai')?.content;
+  const hasEmergencySignal = EMERGENCY_REGEX.test(lowered);
+
+  if (hasEmergencySignal) {
+    if (language === 'hi') {
+      return 'आपके संदेश में गंभीर लक्षण दिखाई दे रहे हैं। कृपया तुरंत आपातकालीन सहायता (112) या नजदीकी अस्पताल से संपर्क करें। मैं आपके साथ हूं।';
+    }
+    if (language === 'mr') {
+      return 'तुमच्या संदेशात गंभीर लक्षणे दिसत आहेत. कृपया त्वरित आपत्कालीन मदत (112) किंवा जवळच्या रुग्णालयाशी संपर्क साधा. मी तुमच्यासोबत आहे.';
+    }
+    return 'Your message suggests serious symptoms. Please contact emergency services (112) or the nearest hospital immediately. I am here with you.';
+  }
+
+  if (latestAi) {
+    if (language === 'hi') {
+      return `हमारी पिछली बातचीत को ध्यान में रखते हुए: ${latestAi.slice(0, 180)}... कृपया बताएं कि अभी आपकी सबसे मुख्य परेशानी क्या है (दर्द, बुखार, खांसी, या कुछ और)।`;
+    }
+    if (language === 'mr') {
+      return `आपल्या आधीच्या संभाषणानुसार: ${latestAi.slice(0, 180)}... कृपया आत्ता तुमची मुख्य तक्रार कोणती आहे ते सांगा (दुखणे, ताप, खोकला किंवा इतर).`;
+    }
+    return `Based on our previous discussion: ${latestAi.slice(0, 180)}... Please tell me your biggest concern right now (pain, fever, cough, or something else).`;
+  }
+
+  if (language === 'hi') {
+    return 'मैं आपकी बात समझ रही हूं। कृपया लक्षणों की अवधि, तीव्रता और कोई अन्य संबंधित लक्षण बताएं ताकि मैं बेहतर मार्गदर्शन दे सकूं।';
+  }
+  if (language === 'mr') {
+    return 'मी तुमचे म्हणणे समजले. कृपया लक्षणे किती दिवसांपासून आहेत, किती तीव्र आहेत आणि इतर संबंधित लक्षणे आहेत का ते सांगा.';
+  }
+  return 'I understand. Please share symptom duration, severity, and any related symptoms so I can guide you better.';
+}
 
 export default function Consultation() {
   const [messages, setMessages] = useState([]);
@@ -72,7 +105,8 @@ export default function Consultation() {
       const res = await sendMessage(sessionId, msg, language);
       setMessages(prev => [...prev, { type: 'ai', content: res.data.message, severity: res.data.severity, isEmergency: res.data.is_emergency }]);
     } catch {
-      setMessages(prev => [...prev, { type: 'ai', content: uiText.retryMessage }]);
+      const fallback = buildContextualFallback(language, msg, messages);
+      setMessages(prev => [...prev, { type: 'ai', content: fallback }]);
     }
     setLoading(false);
   };

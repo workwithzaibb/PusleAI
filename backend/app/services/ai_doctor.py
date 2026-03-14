@@ -52,7 +52,8 @@ class AIDoctorService:
         user_input: str,
         language: Optional[str] = None,
         user_history: Optional[Dict] = None,
-        session_id: Optional[str] = None
+        session_id: Optional[str] = None,
+        conversation_history: Optional[List[Dict[str, str]]] = None
     ) -> DoctorResponse:
         """
         Main consultation method
@@ -62,6 +63,7 @@ class AIDoctorService:
             language: Language code (auto-detect if None)
             user_history: Previous medical history
             session_id: Existing session ID or None for new
+            conversation_history: Recent consultation messages for continuity
             
         Returns:
             Complete DoctorResponse
@@ -99,7 +101,8 @@ class AIDoctorService:
             emotion=emotion,
             emotional_prefix=emotional_prefix,
             language=language,
-            user_input=user_input
+            user_input=user_input,
+            conversation_history=conversation_history
         )
         
         return response
@@ -146,7 +149,8 @@ class AIDoctorService:
         emotion,
         emotional_prefix: str,
         language: str,
-        user_input: str
+        user_input: str,
+        conversation_history: Optional[List[Dict[str, str]]] = None
     ) -> DoctorResponse:
         """Generate comprehensive response using Gemini AI"""
         
@@ -154,9 +158,14 @@ class AIDoctorService:
         symptoms = analysis.get("symptoms", [])
         confidence = analysis.get("overall_confidence", 0.5)
         severity = analysis.get("overall_severity", "low")
+        has_clinical_signals = bool(symptoms or conditions)
         
         # Get AI-generated response from Gemini
-        ai_message = await gemini_service.get_response(user_input, language)
+        ai_message = await gemini_service.get_response(
+            user_input,
+            language,
+            conversation_history=conversation_history
+        )
         
         # Build advice message
         message_parts = []
@@ -168,8 +177,8 @@ class AIDoctorService:
         # Add AI-generated response
         message_parts.append(ai_message)
         
-        # Add symptom analysis if conditions detected
-        if conditions and confidence > 0.6:
+        # Add symptom analysis only when we actually have meaningful clinical signals.
+        if has_clinical_signals and conditions and confidence > 0.6:
             top_condition = conditions[0]
             if language == "en":
                 message_parts.append(
@@ -184,8 +193,8 @@ class AIDoctorService:
                     f"\n\n📋 विश्लेषण: लक्षणांवर आधारित, हे {top_condition['name']} शी संबंधित असू शकते."
                 )
         
-        # Add confidence disclaimer
-        if confidence < settings.CONFIDENCE_THRESHOLD_MEDIUM:
+        # Add confidence disclaimer only for symptom-based analysis flows.
+        if has_clinical_signals and confidence < settings.CONFIDENCE_THRESHOLD_MEDIUM:
             if language == "en":
                 message_parts.append(
                     f"\n\n⚠️ AI Confidence: {int(confidence * 100)}% - "
@@ -211,13 +220,18 @@ class AIDoctorService:
         
         # Determine follow-up
         follow_up_hours = None
-        if severity in ["medium", "high"]:
+        if has_clinical_signals and severity in ["medium", "high"]:
             follow_up_hours = 24
-        elif symptoms:
+        elif has_clinical_signals and symptoms:
             follow_up_hours = 48
         
         # Build reasoning (Explainable AI)
-        reasoning = self._build_reasoning(symptoms, conditions, confidence)
+        reasoning = self._build_reasoning(
+            symptoms=symptoms,
+            conditions=conditions,
+            confidence=confidence,
+            has_clinical_signals=has_clinical_signals
+        )
         
         return DoctorResponse(
             session_id=session_id,
@@ -228,10 +242,18 @@ class AIDoctorService:
             severity=severity,
             is_emergency=emergency.is_emergency if emergency else False,
             emergency_action=emergency.recommended_action if emergency and emergency.is_emergency else None,
-            advice=conditions[0]["advice"] if conditions else "Monitor your symptoms",
+            advice=(
+                conditions[0]["advice"]
+                if conditions
+                else "General guidance shared based on your question."
+            ),
             home_care=list(set(home_care))[:5],
             warning_signs=list(set(warning_signs))[:5],
-            should_see_doctor=analysis.get("requires_doctor", False),
+            should_see_doctor=(
+                analysis.get("requires_doctor", False)
+                if has_clinical_signals
+                else False
+            ),
             follow_up_hours=follow_up_hours,
             emotional_support=emotional_prefix if emotion.requires_calm_response else None,
             language=language,
@@ -242,9 +264,13 @@ class AIDoctorService:
         self,
         symptoms: List,
         conditions: List,
-        confidence: float
+        confidence: float,
+        has_clinical_signals: bool = True
     ) -> str:
         """Build explainable AI reasoning"""
+        if not has_clinical_signals:
+            return "General/follow-up query detected; response generated from user intent and recent conversation context."
+
         parts = []
         
         if symptoms:

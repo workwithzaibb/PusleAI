@@ -3,7 +3,7 @@ Consultation Router - Main AI Doctor consultation endpoint
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List, Dict
 from app.time_utils import utc_now
 import uuid
 
@@ -20,8 +20,30 @@ from app.schemas import (
 from app.api.auth import get_current_user
 from app.services.ai_doctor import ai_doctor
 from app.knowledge.translations import get_translation
+from app.config import settings
 
 router = APIRouter()
+
+
+def _build_conversation_history(messages: List[ConsultationMessageModel]) -> List[Dict[str, str]]:
+    """Convert DB messages into a compact role/content history for LLM context."""
+    history: List[Dict[str, str]] = []
+
+    for msg in messages:
+        if msg.message_type in (MessageType.USER_TEXT, MessageType.USER_VOICE):
+            role = "user"
+        elif msg.message_type == MessageType.AI_RESPONSE:
+            role = "assistant"
+        else:
+            continue
+
+        content = (msg.content or "").strip()
+        if not content:
+            continue
+
+        history.append({"role": role, "content": content})
+
+    return history
 
 
 @router.post("/start")
@@ -82,6 +104,14 @@ async def send_message(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Consultation session is not active"
         )
+
+    # Fetch a bounded recent history for better continuity in long conversations.
+    window_size = max(4, settings.CONSULTATION_CONTEXT_WINDOW_MESSAGES)
+    recent_messages = db.query(ConsultationMessageModel).filter(
+        ConsultationMessageModel.consultation_id == consultation.id
+    ).order_by(ConsultationMessageModel.created_at.desc()).limit(window_size).all()
+    recent_messages.reverse()
+    conversation_history = _build_conversation_history(recent_messages)
     
     # Save user message
     user_msg = ConsultationMessageModel(
@@ -96,7 +126,8 @@ async def send_message(
     response = await ai_doctor.consult(
         user_input=data.message,
         language=data.language or consultation.language,
-        session_id=data.session_id
+        session_id=data.session_id,
+        conversation_history=conversation_history
     )
     
     # Save AI response

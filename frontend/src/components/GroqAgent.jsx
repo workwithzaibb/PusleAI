@@ -38,6 +38,54 @@ const MOOD_CONFIG = {
   neutral: { emoji: '😐', icon: Meh, color: 'text-slate-300', bg: 'bg-slate-500/20', label: 'Neutral' },
 };
 
+const AGENT_EMERGENCY_REGEX = /(chest pain|difficulty breathing|can\'t breathe|unconscious|stroke|heart attack|severe pain|severe bleeding|suicide|self harm|सीने में दर्द|सांस|बेहोश|आत्महत्या|छाती|छातीत|श्वास|बेशुद्ध|आत्महत्य)/i;
+
+function buildAgentContextualFallback(language, userMessage, history = []) {
+  const lowered = (userMessage || '').toLowerCase();
+  const latestAgent = [...history].reverse().find(m => m.role === 'agent')?.message;
+  const isEmergency = AGENT_EMERGENCY_REGEX.test(lowered);
+  const isQuestionLike = /\?|^(what|why|how|when|can|should|is|are|explain|tell|which|who)\b/i.test(lowered);
+
+  if (isEmergency) {
+    if (language === 'hi') {
+      return 'आपके संदेश में गंभीर लक्षण दिख रहे हैं। कृपया तुरंत 112 या नजदीकी अस्पताल से संपर्क करें। मैं आपकी मदद के लिए यहां हूं।';
+    }
+    if (language === 'mr') {
+      return 'तुमच्या संदेशात गंभीर लक्षणे दिसत आहेत. कृपया त्वरित 112 किंवा जवळच्या रुग्णालयाशी संपर्क साधा. मी मदतीसाठी इथे आहे.';
+    }
+    return 'Your message suggests serious symptoms. Please contact emergency services (112) or the nearest hospital immediately. I am here to support you.';
+  }
+
+  if (latestAgent) {
+    const preview = latestAgent.slice(0, 180);
+    if (language === 'hi') {
+      return `हमारी पिछली बातचीत के आधार पर: ${preview}... कृपया अपना मुख्य प्रश्न बताएं, मैं सीधे उसी का जवाब दूंगी।`;
+    }
+    if (language === 'mr') {
+      return `आपल्या आधीच्या संभाषणानुसार: ${preview}... कृपया तुमचा मुख्य प्रश्न सांगा, मी थेट त्याचे उत्तर देईन.`;
+    }
+    return `Based on our previous discussion: ${preview}... Please share your main question, and I will answer it directly.`;
+  }
+
+  if (isQuestionLike) {
+    if (language === 'hi') {
+      return 'मैं आपका सवाल समझ रही हूं। कृपया थोड़ा संदर्भ दें (कब से, कितनी गंभीरता, और संबंधित लक्षण/दवाएं), ताकि मैं सटीक उत्तर दे सकूं।';
+    }
+    if (language === 'mr') {
+      return 'मी तुमचा प्रश्न समजले. कृपया थोडा संदर्भ द्या (कधीपासून, किती तीव्र, आणि संबंधित लक्षणे/औषधे), म्हणजे मी अचूक उत्तर देऊ शकेन.';
+    }
+    return 'I understand your question. Please share a little context (duration, severity, and related symptoms/medicines) so I can answer more accurately.';
+  }
+
+  if (language === 'hi') {
+    return 'मैं आपकी बात समझ रही हूं। कृपया अपनी मुख्य समस्या थोड़ा विस्तार से बताएं, मैं आपकी मदद करूंगी।';
+  }
+  if (language === 'mr') {
+    return 'मी तुमचे म्हणणे समजले. कृपया तुमची मुख्य तक्रार थोडी विस्ताराने सांगा, मी मदत करेन.';
+  }
+  return 'I understand. Please describe your main concern in a bit more detail, and I will help you.';
+}
+
 // Error Boundary to prevent blank page on crash
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -531,12 +579,17 @@ function GroqAgentInner({ language = 'en' }) {
     setIsProcessing(true);
     // Removed as auto validation handles restarting
     
+    const historySnapshot = [...conversationHistory];
     setConversationHistory(prev => [...prev, { role: 'user', message: text }]);
     setTranscript(text);
     
     try {
       const response = await sendApiMessage(sessionId, text, language);
-      const aiMessage = response.data?.message || response.data?.response || "I understand. How can I help you further?";
+      const aiMessage = (
+        response.data?.message
+        || response.data?.response
+        || buildAgentContextualFallback(language, text, historySnapshot)
+      );
       
       console.log('🤖 AI Response:', aiMessage);
       
@@ -549,9 +602,7 @@ function GroqAgentInner({ language = 'en' }) {
       
     } catch (err) {
       console.error('Error getting AI response:', err);
-      const errorMsg = language === 'hi' 
-        ? "माफ़ कीजिए, मुझे आपकी बात समझने में कुछ परेशानी हुई। कृपया फिर से बताएं।"
-        : "I'm sorry, I had trouble understanding. Could you please repeat that?";
+      const errorMsg = buildAgentContextualFallback(language, text, historySnapshot);
       
       setConversationHistory(prev => [...prev, { role: 'agent', message: errorMsg }]);
       setTranscript(errorMsg);

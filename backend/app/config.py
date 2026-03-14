@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     # Medical AI Settings
     CONFIDENCE_THRESHOLD_LOW: float = 0.4
     CONFIDENCE_THRESHOLD_MEDIUM: float = 0.7
+    # Conversation context settings (for long consultations)
+    CONSULTATION_CONTEXT_WINDOW_MESSAGES: int = 30
+    GEMINI_CONTEXT_MAX_MESSAGES: int = 24
+    GEMINI_CONTEXT_MAX_CHARS: int = 7000
     EMERGENCY_KEYWORDS: list = [
         "chest pain", "difficulty breathing", "severe bleeding",
         "unconscious", "heart attack", "stroke", "seizure"
