@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Use environment variable for API URL, fallback to Railway production URL
 const API_URL = import.meta.env.VITE_API_URL 
-  || 'https://pulseai-production.up.railway.app/api/v1';
+  || 'https://pusleai-production-0d4b.up.railway.app/api/v1';
 
 const api = axios.create({
   baseURL: API_URL,

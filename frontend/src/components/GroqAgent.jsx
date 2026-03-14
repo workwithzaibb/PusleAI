@@ -7,7 +7,7 @@ import { startConsultation, sendMessage as sendApiMessage } from '../api';
 // GROQ CONFIGURATION  
 // ============================================================================
 const API_URL = import.meta.env.VITE_API_URL 
-  || 'https://pulseai-production.up.railway.app/api/v1';
+  || 'https://pusleai-production-0d4b.up.railway.app/api/v1';
 
 const GROQ_TTS_URL = `${API_URL}/groq/tts`;
 const GROQ_STT_URL = `${API_URL}/groq/stt`;
