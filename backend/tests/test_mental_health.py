@@ -3,6 +3,7 @@ Tests for Mental Health Feature
 """
 import pytest
 from datetime import datetime
+from uuid import uuid4
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -26,6 +27,11 @@ engine = create_engine(
     poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def make_unique_phone(prefix: str = "6") -> str:
+    """Return a unique 10-digit phone number for isolated test data."""
+    return f"{prefix}{uuid4().int % 1_000_000_000:09d}"
 
 
 def override_get_db():
@@ -55,7 +61,7 @@ def client(test_db):
 def test_user(test_db):
     db = TestingSessionLocal()
     user = User(
-        phone_number="1234567890",
+        phone_number=make_unique_phone(),
         full_name="Test User",
         hashed_password="hashed_password",
         is_active=True

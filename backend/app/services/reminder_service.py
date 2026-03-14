@@ -1,7 +1,8 @@
-"""
+﻿"""
 Reminder Service - Core business logic for medication reminders
 """
 from datetime import datetime, time, timedelta
+from app.time_utils import utc_now
 from typing import List, Optional, Dict, Any, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, or_
@@ -59,7 +60,7 @@ class ReminderService:
             frequency=data.frequency,
             frequency_hours=data.frequency_hours,
             timing=data.timing,
-            start_date=data.start_date or datetime.utcnow(),
+            start_date=data.start_date or utc_now(),
             end_date=data.end_date,
             duration_days=data.duration_days,
             is_ongoing=data.is_ongoing,
@@ -143,7 +144,7 @@ class ReminderService:
         for field, value in update_data.items():
             setattr(medication, field, value)
         
-        medication.updated_at = datetime.utcnow()
+        medication.updated_at = utc_now()
         self.db.commit()
         self.db.refresh(medication)
         
@@ -156,7 +157,7 @@ class ReminderService:
             return False
         
         medication.is_active = False
-        medication.updated_at = datetime.utcnow()
+        medication.updated_at = utc_now()
         self.db.commit()
         
         return True
@@ -183,7 +184,7 @@ class ReminderService:
         notes: Optional[str] = None
     ) -> AdherenceLog:
         """Mark a medication dose as taken"""
-        now = taken_at or datetime.utcnow()
+        now = taken_at or utc_now()
         
         # Find the scheduled time
         scheduled_datetime = self._find_scheduled_time(medication_id, schedule_id)
@@ -230,7 +231,7 @@ class ReminderService:
             medication_id=medication_id,
             schedule_id=schedule_id,
             user_id=user_id,
-            scheduled_datetime=scheduled_datetime or datetime.utcnow(),
+            scheduled_datetime=scheduled_datetime or utc_now(),
             status=AdherenceStatus.SKIPPED,
             skip_reason=skip_reason,
             notes=notes
@@ -268,7 +269,7 @@ class ReminderService:
             medication_id=medication_id,
             schedule_id=schedule_id,
             user_id=user_id,
-            scheduled_datetime=datetime.utcnow(),
+            scheduled_datetime=utc_now(),
             status=AdherenceStatus.SNOOZED,
             notes=f"Snoozed for {snooze_minutes} minutes"
         )
@@ -276,7 +277,7 @@ class ReminderService:
         self.db.add(log)
         self.db.commit()
         
-        new_reminder_time = datetime.utcnow() + timedelta(minutes=snooze_minutes)
+        new_reminder_time = utc_now() + timedelta(minutes=snooze_minutes)
         
         return {
             "success": True,
@@ -291,7 +292,7 @@ class ReminderService:
         period_days: int = 30
     ) -> Dict[str, Any]:
         """Calculate adherence analytics"""
-        start_date = datetime.utcnow() - timedelta(days=period_days)
+        start_date = utc_now() - timedelta(days=period_days)
         
         # Get all logs in period
         logs = self.db.query(AdherenceLog).filter(
@@ -314,8 +315,8 @@ class ReminderService:
             UserMedicationPreference.user_id == user_id
         ).first()
         
-        current_streak = prefs.streak_count if prefs else 0
-        longest_streak = prefs.longest_streak if prefs else 0
+        current_streak = (prefs.streak_count or 0) if prefs else 0
+        longest_streak = (prefs.longest_streak or 0) if prefs else 0
         
         # By medication analysis
         by_medication = self._get_adherence_by_medication(user_id, start_date)
@@ -434,7 +435,7 @@ class ReminderService:
         hours_ahead: int = 24
     ) -> List[Dict[str, Any]]:
         """Get upcoming medication reminders"""
-        now = datetime.utcnow()
+        now = utc_now()
         cutoff = now + timedelta(hours=hours_ahead)
         
         # Get active medications with their schedules
@@ -544,7 +545,7 @@ class ReminderService:
         schedule_id: Optional[int] = None
     ) -> Optional[datetime]:
         """Find the nearest scheduled time for a medication"""
-        now = datetime.utcnow()
+        now = utc_now()
         
         if schedule_id:
             schedule = self.db.query(MedicationSchedule).filter(
@@ -585,11 +586,11 @@ class ReminderService:
             prefs = UserMedicationPreference(user_id=user_id)
             self.db.add(prefs)
         
-        prefs.streak_count += 1
-        prefs.total_doses_taken += 1
-        prefs.total_doses_scheduled += 1
+        prefs.streak_count = (prefs.streak_count or 0) + 1
+        prefs.total_doses_taken = (prefs.total_doses_taken or 0) + 1
+        prefs.total_doses_scheduled = (prefs.total_doses_scheduled or 0) + 1
         
-        if prefs.streak_count > prefs.longest_streak:
+        if prefs.streak_count > (prefs.longest_streak or 0):
             prefs.longest_streak = prefs.streak_count
     
     def _get_adherence_by_medication(
@@ -709,9 +710,9 @@ class ReminderService:
         contraindicated = any(i["severity"] == "contraindicated" for i in interactions)
         
         if contraindicated:
-            return "⚠️ CRITICAL: Some medications should NOT be taken together. Consult your doctor immediately."
+            return "âš ï¸ CRITICAL: Some medications should NOT be taken together. Consult your doctor immediately."
         elif severe:
-            return "⚠️ WARNING: Severe interactions detected. Please consult your healthcare provider before continuing."
+            return "âš ï¸ WARNING: Severe interactions detected. Please consult your healthcare provider before continuing."
         else:
             return "Some interactions found. Review the details and consult your pharmacist if concerned."
     
@@ -750,3 +751,6 @@ reminder_service = None
 def get_reminder_service(db: Session) -> ReminderService:
     """Get or create reminder service instance"""
     return ReminderService(db)
+
+
+

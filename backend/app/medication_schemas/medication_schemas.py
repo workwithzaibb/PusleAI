@@ -1,7 +1,7 @@
 """
 Pydantic Schemas for Medication Reminder System
 """
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, time, date
 from enum import Enum
@@ -78,8 +78,8 @@ class MedicationCreate(BaseModel):
     schedule_times: Optional[List[str]] = None  # ["08:00", "20:00"]
     timezone: str = Field(default="Asia/Kolkata", max_length=50)
     
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "Metformin",
                 "generic_name": "Metformin Hydrochloride",
@@ -94,6 +94,7 @@ class MedicationCreate(BaseModel):
                 "schedule_times": ["08:00", "20:00"]
             }
         }
+    )
 
 
 class MedicationUpdate(BaseModel):
@@ -133,8 +134,7 @@ class ScheduleResponse(BaseModel):
     reminder_enabled: bool
     is_active: bool
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class MedicationResponse(BaseModel):
@@ -167,8 +167,7 @@ class MedicationResponse(BaseModel):
     
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class MedicationListResponse(BaseModel):
@@ -212,8 +211,7 @@ class AdherenceLogResponse(BaseModel):
     delay_minutes: Optional[int] = None
     skip_reason: Optional[str] = None
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AdherenceScoreResponse(BaseModel):
@@ -278,8 +276,9 @@ class InteractionCheckRequest(BaseModel):
     medication_names: Optional[List[str]] = None  # Check by name
     new_medication: Optional[str] = None  # Check new med against existing
     
-    @validator('medication_names', 'medication_ids', pre=True, always=True)
-    def at_least_one_required(cls, v, values):
+    @field_validator("medication_names", "medication_ids", mode="before")
+    @classmethod
+    def at_least_one_required(cls, v):
         # At least some input required
         return v
 
@@ -363,5 +362,4 @@ class MedicationPreferencesResponse(BaseModel):
     total_doses_taken: int
     adherence_rate: float
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

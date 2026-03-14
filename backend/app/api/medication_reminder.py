@@ -1,12 +1,12 @@
-"""
+﻿"""
 Medication Reminder API Router
 Endpoints for medication management, adherence tracking, and reminders
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from datetime import datetime
-
+from datetime import timedelta
+from app.time_utils import utc_now
 from app.database import get_db
 from app.models.user import User
 from app.models.medication import Medication, AdherenceLog
@@ -60,9 +60,9 @@ async def add_medication(
     Add a new medication with automatic schedule generation.
     
     **Schedule times** are automatically calculated based on frequency and timing:
-    - once_daily → 09:00
-    - twice_daily → 08:00, 20:00
-    - three_times_daily → 08:00, 14:00, 20:00
+    - once_daily â†’ 09:00
+    - twice_daily â†’ 08:00, 20:00
+    - three_times_daily â†’ 08:00, 14:00, 20:00
     
     Or provide custom `schedule_times` array.
     """
@@ -338,7 +338,7 @@ async def mark_medication_taken(
         "log_id": log.id,
         "status": log.status.value,
         "delay_minutes": log.delay_minutes,
-        "message": "Dose marked as taken! 💊"
+        "message": "Dose marked as taken! ðŸ’Š"
     }
 
 
@@ -551,9 +551,8 @@ async def get_adherence_history(
 ):
     """Get adherence history logs"""
     check_feature_enabled()
-    
-    from datetime import timedelta
-    start_date = datetime.utcnow() - timedelta(days=days)
+
+    start_date = utc_now() - timedelta(days=days)
     
     query = db.query(AdherenceLog).filter(
         AdherenceLog.user_id == current_user.id,
@@ -580,3 +579,6 @@ async def get_adherence_history(
         ],
         "count": len(logs)
     }
+
+
+

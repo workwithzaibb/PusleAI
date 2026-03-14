@@ -1,8 +1,10 @@
-"""
+﻿"""
 Tests for Medication Reminder System
 """
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
+from app.time_utils import utc_now
+from uuid import uuid4
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -26,6 +28,11 @@ engine = create_engine(
     poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def make_unique_phone(prefix: str = "7") -> str:
+    """Return a unique 10-digit phone number for isolated test data."""
+    return f"{prefix}{uuid4().int % 1_000_000_000:09d}"
 
 
 def override_get_db():
@@ -59,7 +66,7 @@ def test_user(test_db):
     """Create a test user"""
     db = TestingSessionLocal()
     user = User(
-        phone_number="1234567890",
+        phone_number=make_unique_phone(),
         full_name="Test User",
         hashed_password="hashed_password",
         is_active=True
@@ -123,8 +130,7 @@ class TestMedicationModel:
         )
         db.add(medication)
         db.flush()
-        
-        from datetime import time
+
         schedule = MedicationSchedule(
             medication_id=medication.id,
             scheduled_time=time(8, 0),
@@ -164,8 +170,8 @@ class TestAdherenceLog:
         log = AdherenceLog(
             medication_id=medication.id,
             user_id=test_user.id,
-            scheduled_datetime=datetime.utcnow(),
-            actual_datetime=datetime.utcnow(),
+            scheduled_datetime=utc_now(),
+            actual_datetime=utc_now(),
             status=AdherenceStatus.TAKEN,
             delay_minutes=5
         )
@@ -194,7 +200,7 @@ class TestAdherenceLog:
         log = AdherenceLog(
             medication_id=medication.id,
             user_id=test_user.id,
-            scheduled_datetime=datetime.utcnow(),
+            scheduled_datetime=utc_now(),
             status=AdherenceStatus.SKIPPED,
             skip_reason="Feeling better, no pain"
         )
@@ -368,7 +374,7 @@ class TestIntegration:
     def test_medication_lifecycle(self, test_db, test_user):
         """Test full medication lifecycle: add -> schedule -> take -> score"""
         from app.services.reminder_service import ReminderService
-        from app.schemas.medication_schemas import MedicationCreate
+        from app.medication_schemas.medication_schemas import MedicationCreate
         
         db = TestingSessionLocal()
         service = ReminderService(db)
@@ -407,3 +413,6 @@ class TestIntegration:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+

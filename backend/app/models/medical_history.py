@@ -1,10 +1,9 @@
-"""
+﻿"""
 Medical History Model - Tracks patient medical records
 """
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
-from datetime import datetime
-
+from app.time_utils import utc_now
 from app.base import Base
 
 
@@ -42,11 +41,14 @@ class MedicalHistory(Base):
     diet_type = Column(String(50), nullable=True)
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     
     # Relationships
     user = relationship("User", back_populates="medical_history")
     
     def __repr__(self):
         return f"<MedicalHistory(id={self.id}, user_id={self.user_id})>"
+
+
+

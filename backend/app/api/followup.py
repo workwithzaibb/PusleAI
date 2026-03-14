@@ -1,10 +1,10 @@
-"""
+﻿"""
 Follow-up Router - Automated patient follow-ups
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
-
+from datetime import timedelta
+from app.time_utils import utc_now
 from app.database import get_db
 from app.models.user import User
 from app.models.followup import FollowUp, FollowUpStatus
@@ -32,7 +32,7 @@ async def schedule_followup(
         raise HTTPException(status_code=404, detail="Consultation not found")
     
     # Create follow-up
-    scheduled_time = datetime.utcnow() + timedelta(hours=data.scheduled_hours)
+    scheduled_time = utc_now() + timedelta(hours=data.scheduled_hours)
     
     followup = FollowUp(
         user_id=current_user.id,
@@ -70,7 +70,7 @@ async def respond_to_followup(
     
     # Update follow-up with response
     followup.status = FollowUpStatus.RESPONDED
-    followup.responded_at = datetime.utcnow()
+    followup.responded_at = utc_now()
     followup.patient_response = response.patient_response
     followup.symptoms_improved = response.symptoms_improved
     followup.new_symptoms = response.new_symptoms
@@ -142,3 +142,6 @@ async def get_followup_history(
         }
         for f in followups
     ]
+
+
+

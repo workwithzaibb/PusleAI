@@ -125,6 +125,10 @@ const PrescriptionScanner = () => {
     setManualText('');
   };
 
+  const medicinesWithAlternatives = results
+    ? results.medicines_found.filter((medicine) => medicine.alternatives?.length > 0).length
+    : 0;
+
   return (
     <div className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'bg-black text-white' : 'bg-gradient-to-br from-slate-50 via-green-50 to-cyan-50 text-gray-900'}`}>
       {/* Animated Background */}
@@ -374,8 +378,14 @@ const PrescriptionScanner = () => {
                 <div>
                   <h2 className="text-2xl font-bold mb-2">Analysis Complete!</h2>
                   <p className="text-cyan-300">
-                    Found <span className="text-green-400 font-bold">{results.medicines_found.length}</span> medicines with alternatives
+                    Detected <span className="text-green-400 font-bold">{results.medicines_found.length}</span> medicines from your prescription
                   </p>
+                  <p className="text-cyan-300 text-sm mt-1">
+                    Alternatives available for <span className="text-green-400 font-bold">{medicinesWithAlternatives}</span> medicines
+                  </p>
+                  {results.message && (
+                    <p className="text-cyan-400 text-xs mt-2">{results.message}</p>
+                  )}
                 </div>
                 <div className="text-center">
                   <div className="flex items-center gap-2 text-4xl font-black text-green-400">
@@ -435,25 +445,31 @@ const PrescriptionScanner = () => {
                     {/* Alternatives */}
                     <div className="space-y-3">
                       <p className="text-xs text-cyan-400 uppercase tracking-wider">Cheaper Alternatives:</p>
-                      {medicine.alternatives.slice(0, 3).map((alt, altIdx) => (
-                        <div 
-                          key={altIdx}
-                          className={`p-3 rounded-xl ${alt.savings ? 'bg-green-500/10 border border-green-500/20' : 'bg-white/5'}`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium">{alt.name}</p>
-                              <p className="text-xs text-cyan-400">{alt.manufacturer}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-green-400 font-bold">{alt.price}</p>
-                              {alt.savings && (
-                                <p className="text-xs text-green-400">Save {alt.savings}%</p>
-                              )}
+                      {medicine.alternatives.length > 0 ? (
+                        medicine.alternatives.slice(0, 3).map((alt, altIdx) => (
+                          <div 
+                            key={altIdx}
+                            className={`p-3 rounded-xl ${alt.savings ? 'bg-green-500/10 border border-green-500/20' : 'bg-white/5'}`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="font-medium">{alt.name}</p>
+                                <p className="text-xs text-cyan-400">{alt.manufacturer}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-green-400 font-bold">{alt.price}</p>
+                                {alt.savings && (
+                                  <p className="text-xs text-green-400">Save {alt.savings}%</p>
+                                )}
+                              </div>
                             </div>
                           </div>
+                        ))
+                      ) : (
+                        <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-sm text-cyan-300">
+                          No reliable alternatives found for this medicine yet.
                         </div>
-                      ))}
+                      )}
                     </div>
                   </div>
                 </div>

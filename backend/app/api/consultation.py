@@ -1,10 +1,10 @@
-"""
+﻿"""
 Consultation Router - Main AI Doctor consultation endpoint
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Optional
-from datetime import datetime
+from app.time_utils import utc_now
 import uuid
 
 from app.database import get_db
@@ -178,7 +178,7 @@ async def end_consultation(
         )
     
     consultation.status = ConsultationStatus.COMPLETED
-    consultation.ended_at = datetime.utcnow()
+    consultation.ended_at = utc_now()
     db.commit()
     
     thank_you = get_translation("thank_you", consultation.language)
@@ -268,3 +268,6 @@ async def get_consultation_details(
             for m in messages
         ]
     }
+
+
+

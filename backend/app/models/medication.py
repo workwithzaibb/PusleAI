@@ -1,9 +1,9 @@
-"""
+﻿"""
 Medication Models - Handles medication reminders, schedules, and adherence tracking
 """
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, ForeignKey, Text, Enum, Time
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from app.time_utils import utc_now
 import enum
 
 from app.base import Base
@@ -60,7 +60,7 @@ class Medication(Base):
     timing = Column(Enum(MedicationTiming), default=MedicationTiming.ANY_TIME)
     
     # Duration
-    start_date = Column(DateTime, default=datetime.utcnow)
+    start_date = Column(DateTime, default=utc_now)
     end_date = Column(DateTime, nullable=True)
     duration_days = Column(Integer, nullable=True)
     is_ongoing = Column(Boolean, default=False)  # For chronic conditions
@@ -85,8 +85,8 @@ class Medication(Base):
     is_active = Column(Boolean, default=True)
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     
     # Relationships
     user = relationship("User", backref="medications")
@@ -141,8 +141,8 @@ class MedicationSchedule(Base):
     is_active = Column(Boolean, default=True)
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     
     # Relationship
     medication = relationship("Medication", back_populates="schedules")
@@ -179,8 +179,8 @@ class AdherenceLog(Base):
     caregiver_notified_at = Column(DateTime, nullable=True)
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     
     # Relationships
     medication = relationship("Medication", back_populates="adherence_logs")
@@ -209,7 +209,7 @@ class PillImage(Base):
     identification_method = Column(String(50), nullable=True)  # "ml_model", "barcode", "manual"
     
     # Metadata
-    captured_at = Column(DateTime, default=datetime.utcnow)
+    captured_at = Column(DateTime, default=utc_now)
     
     # Relationships
     medication = relationship("Medication", back_populates="pill_images")
@@ -244,8 +244,8 @@ class DrugInteraction(Base):
     is_verified = Column(Boolean, default=True)
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     
     def __repr__(self):
         return f"<DrugInteraction(drug_a={self.drug_a}, drug_b={self.drug_b}, severity={self.severity})>"
@@ -285,11 +285,14 @@ class UserMedicationPreference(Base):
     total_doses_scheduled = Column(Integer, default=0)
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     
     # Relationship
     user = relationship("User", backref="medication_preferences", uselist=False)
     
     def __repr__(self):
         return f"<UserMedicationPreference(user_id={self.user_id})>"
+
+
+

@@ -10,7 +10,7 @@ import base64
 from app.services.prescription_scanner import (
     analyze_prescription,
     get_medicine_alternatives,
-    simulate_ocr,
+    perform_ocr,
     extract_medicines_from_text,
     MEDICINE_DATABASE
 )
@@ -69,7 +69,7 @@ async def scan_prescription(
         
         # In production, use actual OCR service
         # For now, simulate OCR
-        extracted_text = simulate_ocr(content)
+        extracted_text = await perform_ocr(content, content_type=file.content_type)
         
     elif text:
         extracted_text = text
@@ -80,7 +80,7 @@ async def scan_prescription(
         )
     
     # Analyze the prescription
-    analysis = analyze_prescription(extracted_text)
+    analysis = await analyze_prescription(extracted_text)
     
     return PrescriptionScanResponse(
         success=True,
@@ -88,7 +88,10 @@ async def scan_prescription(
         medicines_found=analysis["medicines_found"],
         total_potential_savings=analysis["total_potential_savings"],
         recommendations=analysis["recommendations"],
-        message=f"Found {len(analysis['medicines_found'])} medicines with alternatives"
+        message=(
+            f"Detected {analysis.get('medicines_detected', len(analysis['medicines_found']))} medicines; "
+            f"alternatives available for {analysis.get('medicines_with_alternatives', 0)}"
+        )
     )
 
 
@@ -104,7 +107,7 @@ async def analyze_prescription_text(text: str = Form(...)):
             detail="Please provide valid prescription text"
         )
     
-    analysis = analyze_prescription(text)
+    analysis = await analyze_prescription(text)
     
     return PrescriptionScanResponse(
         success=True,
@@ -112,7 +115,10 @@ async def analyze_prescription_text(text: str = Form(...)):
         medicines_found=analysis["medicines_found"],
         total_potential_savings=analysis["total_potential_savings"],
         recommendations=analysis["recommendations"],
-        message=f"Found {len(analysis['medicines_found'])} medicines with alternatives"
+        message=(
+            f"Detected {analysis.get('medicines_detected', len(analysis['medicines_found']))} medicines; "
+            f"alternatives available for {analysis.get('medicines_with_alternatives', 0)}"
+        )
     )
 
 
@@ -125,7 +131,7 @@ async def check_medicines(request: ManualMedicineRequest):
     results = []
     
     for medicine_name in request.medicine_names:
-        alternatives = get_medicine_alternatives(medicine_name)
+        alternatives = await get_medicine_alternatives(medicine_name)
         if alternatives:
             results.append(alternatives)
         else:
@@ -153,7 +159,7 @@ async def search_medicine(medicine_name: str):
     """
     Search for a specific medicine and get its alternatives.
     """
-    alternatives = get_medicine_alternatives(medicine_name)
+    alternatives = await get_medicine_alternatives(medicine_name)
     
     if not alternatives:
         # Try fuzzy matching

@@ -3,6 +3,7 @@ Tests for Doctor and Appointment Features
 """
 import pytest
 from datetime import date, datetime, timedelta, time
+from uuid import uuid4
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -22,6 +23,16 @@ engine = create_engine(
     poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def make_unique_phone(prefix: str) -> str:
+    """Return a unique 10-digit phone number for isolated test data."""
+    return f"{prefix}{uuid4().int % 1_000_000_000:09d}"
+
+
+def make_unique_license() -> str:
+    """Return a unique doctor license ID for isolated test data."""
+    return f"DOC{uuid4().int % 1_000_000:06d}"
 
 
 def override_get_db():
@@ -51,7 +62,7 @@ def client(test_db):
 def doctor_user(test_db):
     db = TestingSessionLocal()
     user = User(
-        phone_number="9999999999",
+        phone_number=make_unique_phone("9"),
         full_name="Dr. Test",
         hashed_password="password",
         role=UserRole.DOCTOR
@@ -64,7 +75,7 @@ def doctor_user(test_db):
     profile = DoctorProfile(
         user_id=user.id,
         specialty="General",
-        license_number="DOC123",
+        license_number=make_unique_license(),
         consultation_fee=50.0
     )
     db.add(profile)
@@ -79,7 +90,7 @@ def doctor_user(test_db):
 def patient_user(test_db):
     db = TestingSessionLocal()
     user = User(
-        phone_number="8888888888",
+        phone_number=make_unique_phone("8"),
         full_name="Patient Test",
         hashed_password="password",
         role=UserRole.PATIENT

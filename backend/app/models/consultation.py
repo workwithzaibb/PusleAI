@@ -1,9 +1,9 @@
-"""
+﻿"""
 Consultation Model - Handles AI doctor consultation sessions
 """
 from sqlalchemy import Column, Integer, String, Float, Text, DateTime, ForeignKey, Enum, JSON, Boolean
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from app.time_utils import utc_now
 import enum
 
 from app.base import Base
@@ -60,7 +60,7 @@ class Consultation(Base):
     stress_level = Column(Float, nullable=True)
     
     # Timestamps
-    started_at = Column(DateTime, default=datetime.utcnow)
+    started_at = Column(DateTime, default=utc_now)
     ended_at = Column(DateTime, nullable=True)
     
     # Relationships
@@ -70,3 +70,6 @@ class Consultation(Base):
     
     def __repr__(self):
         return f"<Consultation(id={self.id}, user_id={self.user_id}, status={self.status})>"
+
+
+

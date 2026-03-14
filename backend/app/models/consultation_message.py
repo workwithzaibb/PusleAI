@@ -1,10 +1,9 @@
-"""
+﻿"""
 ConsultationMessage Model - Handles individual messages in a consultation
 """
 from sqlalchemy import Column, Integer, String, Float, Text, DateTime, ForeignKey, Enum as SAEnum, JSON
 from sqlalchemy.orm import relationship
-from datetime import datetime
-
+from app.time_utils import utc_now
 import enum
 
 from app.base import Base
@@ -35,8 +34,11 @@ class ConsultationMessage(Base):
     # Explainable AI
     reasoning = Column(Text, nullable=True)  # Why AI gave this response
     # Timestamp
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
     # Relationships
     consultation = relationship("Consultation", back_populates="messages")
     def __repr__(self):
         return f"<Message(id={self.id}, type={self.message_type})>"
+
+
+

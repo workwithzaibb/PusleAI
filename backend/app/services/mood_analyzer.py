@@ -1,10 +1,11 @@
-"""
+﻿"""
 Mood Analyzer Service
 Handles mood tracking, journaling, and analytics.
 """
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from datetime import datetime, timedelta
+from datetime import timedelta
+from app.time_utils import utc_now
 from typing import List, Dict, Any
 
 from app.models.mental_health import MoodEntry, JournalEntry, MoodType
@@ -54,7 +55,7 @@ class MoodAnalyzerService:
 
     def get_mood_history(self, user_id: int, days: int = 30) -> List[MoodEntry]:
         """Get mood history for the last N days"""
-        start_date = datetime.utcnow() - timedelta(days=days)
+        start_date = utc_now() - timedelta(days=days)
         return self.db.query(MoodEntry).filter(
             MoodEntry.user_id == user_id,
             MoodEntry.created_at >= start_date
@@ -63,7 +64,7 @@ class MoodAnalyzerService:
     def get_insights(self, user_id: int) -> Dict[str, Any]:
         """Generate insights based on mood and journal history"""
         # 1. Calculate Average Weekly Mood
-        last_7_days = datetime.utcnow() - timedelta(days=7)
+        last_7_days = utc_now() - timedelta(days=7)
         recent_moods = self.db.query(MoodEntry).filter(
             MoodEntry.user_id == user_id,
             MoodEntry.created_at >= last_7_days
@@ -139,3 +140,6 @@ class MoodAnalyzerService:
             ]
         else:
             return ["Consistency is key. Try to log your mood at the same time daily."]
+
+
+

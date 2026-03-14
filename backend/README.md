@@ -59,6 +59,40 @@ uvicorn app.main:app --reload
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
+## Import Medicine Database From Kaggle
+
+1. Configure Kaggle API access:
+
+```bash
+# Option A: environment variables
+set KAGGLE_USERNAME=your_kaggle_username
+set KAGGLE_KEY=your_kaggle_key
+
+# Option B: kaggle.json at ~/.kaggle/kaggle.json
+```
+
+2. Run importer with dataset slug:
+
+```bash
+cd backend
+python scripts/import_kaggle_medicine_db.py --dataset owner/dataset-name
+```
+
+3. Optional: choose a specific CSV file inside the Kaggle dataset:
+
+```bash
+python scripts/import_kaggle_medicine_db.py --dataset owner/dataset-name --file medicines.csv
+```
+
+4. Optional: import from a local CSV (if already downloaded):
+
+```bash
+python scripts/import_kaggle_medicine_db.py --csv-file C:/path/to/medicines.csv
+```
+
+The importer writes `backend/app/knowledge/generated_medicine_db.json`.
+Restart backend after import so the updated database is loaded.
+
 ## API Endpoints
 
 ### Authentication

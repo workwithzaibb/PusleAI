@@ -147,8 +147,8 @@
               ▼                             ▼
     ┌─────────────────┐          ┌─────────────────┐
     │   PostgreSQL    │          │  External APIs  │
-    │   Database      │          │  (ElevenLabs,   │
-    │                 │          │   OpenAI, etc)  │
+    │   Database      │          │  (Groq, OpenAI,  │
+    │                 │          │   etc)          │
     └─────────────────┘          └─────────────────┘
 ```
 
@@ -172,14 +172,39 @@ cd PusleAI
 # Setup Frontend
 cd frontend
 npm install
-cp .env.example .env
+cp .env.example .env  # On Windows PowerShell: Copy-Item .env.example .env
 npm run dev
 
 # Setup Backend (new terminal)
 cd backend
 pip install -r requirements.txt
-cp .env.example .env
+cp .env.example .env  # On Windows PowerShell: Copy-Item .env.example .env
 python run.py
+```
+
+### Run Locally (important)
+
+- Frontend and backend must be started from their own folders.
+- `npm run dev` from repo root will fail because there is no root `package.json`.
+
+```bash
+# Terminal 1: Frontend
+cd frontend
+npm install
+npm run dev
+```
+
+```bash
+# Terminal 2: Backend
+cd backend
+pip install -r requirements.txt
+python run.py
+```
+
+```powershell
+# Windows fallback (without activating venv)
+Set-Location backend
+.\venv\Scripts\python.exe run.py
 ```
 
 ### Environment Variables
@@ -189,7 +214,7 @@ Create `.env` files in both `frontend/` and `backend/` directories:
 **Frontend (.env)**
 ```env
 VITE_API_URL=http://localhost:8000
-VITE_ELEVENLABS_KEY=your_key_here
+# Groq key is handled via backend, no VITE_ key needed locally typically
 ```
 
 **Backend (.env)**
@@ -197,7 +222,7 @@ VITE_ELEVENLABS_KEY=your_key_here
 DATABASE_URL=sqlite:///./pulseai.db
 SECRET_KEY=your_super_secret_key
 OPENAI_API_KEY=your_openai_key
-ELEVENLABS_API_KEY=your_elevenlabs_key
+GROQ_API_KEY=your_groq_key
 ```
 
 ---

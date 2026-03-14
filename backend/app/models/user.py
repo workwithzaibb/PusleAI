@@ -1,9 +1,9 @@
-"""
+﻿"""
 User Model - Handles user accounts and authentication
 """
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from app.time_utils import utc_now
 import enum
 
 from app.base import Base
@@ -50,8 +50,8 @@ class User(Base):
     pincode = Column(String(10), nullable=True)
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     last_login = Column(DateTime, nullable=True)
     
     # Relationships
@@ -71,3 +71,6 @@ class User(Base):
     
     def __repr__(self):
         return f"<User(id={self.id}, phone={self.phone_number}, name={self.full_name})>"
+
+
+

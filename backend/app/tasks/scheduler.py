@@ -1,8 +1,9 @@
-"""
+﻿"""
 Background Tasks - Placeholder for scheduled reminder tasks
 Can be extended with Celery, APScheduler, or other task queues
 """
-from datetime import datetime, timedelta
+from datetime import datetime
+from app.time_utils import utc_now
 from typing import Dict, Any, Optional
 import asyncio
 
@@ -49,7 +50,7 @@ class TaskScheduler:
             "scheduled_time": scheduled_time,
             "notification_config": notification_config,
             "status": "scheduled",
-            "created_at": datetime.utcnow()
+            "created_at": utc_now()
         }
         
         self.scheduled_tasks[task_id] = task
@@ -123,7 +124,7 @@ class TaskScheduler:
             results["voice"] = await self._send_voice_call(task)
         
         task["status"] = "sent"
-        task["sent_at"] = datetime.utcnow()
+        task["sent_at"] = utc_now()
         
         return {"success": True, "channels": results}
     
@@ -228,3 +229,6 @@ celery_app.conf.beat_schedule = {
     },
 }
 """
+
+
+

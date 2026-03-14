@@ -15,7 +15,7 @@ from app.api.doctor import router as doctor_router
 from app.api.appointments import router as appointments_router
 from app.api.subscription import router as subscription_router
 from app.api.prescription import router as prescription_router
-from app.api.elevenlabs import router as elevenlabs_router
+from app.api.groq_agent import router as groq_agent_router
 
 __all__ = [
     "auth_router",
@@ -34,7 +34,7 @@ __all__ = [
     "appointments_router",
     "subscription_router",
     "prescription_router",
-    "elevenlabs_router"
+    "groq_agent_router"
 ]
 
 

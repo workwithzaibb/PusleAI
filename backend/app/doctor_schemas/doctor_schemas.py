@@ -1,7 +1,7 @@
 """
 Doctor Appointment Schemas
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 from datetime import datetime, date, time
 from enum import Enum
@@ -53,8 +53,7 @@ class DoctorProfileResponse(DoctorProfileBase):
     rating_average: float
     rating_count: int
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ Availability Schemas ============
@@ -101,8 +100,7 @@ class AppointmentResponse(BaseModel):
     meeting_link: Optional[str]
     reason: Optional[str]
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ Prescription Schemas ============
@@ -132,5 +130,4 @@ class PrescriptionResponse(BaseModel):
     instructions: Optional[str]
     issued_date: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

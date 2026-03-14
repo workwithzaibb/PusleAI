@@ -1,9 +1,9 @@
-"""
+﻿"""
 Follow-up Model - Handles automated patient follow-ups
 """
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum, Boolean
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from app.time_utils import utc_now
 import enum
 
 from app.base import Base
@@ -52,10 +52,13 @@ class FollowUp(Base):
     notification_sent = Column(Boolean, default=False)
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
     
     # Relationships
     user = relationship("User", back_populates="follow_ups")
     
     def __repr__(self):
         return f"<FollowUp(id={self.id}, status={self.status}, scheduled={self.scheduled_at})>"
+
+
+

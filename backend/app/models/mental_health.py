@@ -1,9 +1,9 @@
-"""
+﻿"""
 Mental Health Models
 """
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean, Float, Enum, JSON
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from app.time_utils import utc_now
 import enum
 
 from app.base import Base
@@ -49,7 +49,7 @@ class MoodEntry(Base):
     notes = Column(Text, nullable=True)
     activities = Column(JSON, nullable=True)  # List of activities: ["work", "exercise"]
     factors = Column(JSON, nullable=True)     # List of factors: ["sleep", "relationships"]
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
     
     user = relationship("User", backref="mood_entries")
 
@@ -66,8 +66,8 @@ class JournalEntry(Base):
     sentiment_magnitude = Column(Float, nullable=True)
     emotion_tags = Column(JSON, nullable=True)  # ["hopeful", "reflective"]
     is_private = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     
     user = relationship("User", backref="journal_entries")
 
@@ -82,7 +82,7 @@ class MentalHealthAssessment(Base):
     severity_label = Column(String(50), nullable=True)  # Mild, Moderate, Severe
     answers = Column(JSON, nullable=False)  # Full QA storage
     recommendations = Column(JSON, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
     
     user = relationship("User", backref="assessments")
 
@@ -93,7 +93,7 @@ class TherapySession(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     session_type = Column(String(50), default="general")  # cbt, ventilation, problem-solving
-    start_time = Column(DateTime, default=datetime.utcnow)
+    start_time = Column(DateTime, default=utc_now)
     end_time = Column(DateTime, nullable=True)
     summary = Column(Text, nullable=True)
     key_insights = Column(JSON, nullable=True)
@@ -110,7 +110,7 @@ class TherapyMessage(Base):
     session_id = Column(Integer, ForeignKey("therapy_sessions.id"), nullable=False, index=True)
     sender = Column(String(20), nullable=False)  # user, bot
     content = Column(Text, nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=utc_now)
     sentiment_score = Column(Float, nullable=True)
     
     session = relationship("TherapySession", back_populates="messages")
@@ -127,7 +127,7 @@ class CrisisEvent(Base):
     action_taken = Column(String(100), nullable=True)    # notified_emergency, helpline_shown
     resolved = Column(Boolean, default=False)
     resolution_notes = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
     
     user = relationship("User", backref="crisis_events")
 
@@ -145,3 +145,6 @@ class CopingStrategy(Base):
     is_favorite = Column(Boolean, default=False)
     
     user = relationship("User", backref="coping_strategies")
+
+
+

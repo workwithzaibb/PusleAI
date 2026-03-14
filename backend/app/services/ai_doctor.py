@@ -115,7 +115,8 @@ class AIDoctorService:
         
         emergency_messages = {
             "en": f"⚠️ EMERGENCY DETECTED!\n\n{emergency.recommended_action}\n\nEmergency: {contacts['emergency']}\nAmbulance: {contacts['ambulance']}\n\nStay calm and seek help immediately.",
-            "hi": f"⚠️ आपातकाल!\n\n{emergency.recommended_action}\n\nआपातकालीन: {contacts['emergency']}\nएम्बुलेंस: {contacts['ambulance']}\n\nशांत रहें और तुरंत मदद लें।"
+            "hi": f"⚠️ आपातकाल!\n\n{emergency.recommended_action}\n\nआपातकालीन: {contacts['emergency']}\nएम्बुलेंस: {contacts['ambulance']}\n\nशांत रहें और तुरंत मदद लें।",
+            "mr": f"⚠️ आपत्कालीन स्थिती!\n\n{emergency.recommended_action}\n\nआपत्कालीन: {contacts['emergency']}\nरुग्णवाहिका: {contacts['ambulance']}\n\nशांत राहा आणि त्वरित मदत घ्या."
         }
         
         return DoctorResponse(
@@ -178,9 +179,9 @@ class AIDoctorService:
                 message_parts.append(
                     f"\n\n📋 विश्लेषण: लक्षण मिलान के आधार पर, यह {top_condition['name']} से संबंधित हो सकता है।"
                 )
-            elif language == "hi":
+            elif language == "mr":
                 message_parts.append(
-                    "मैंने आपके लक्षण नोट कर लिए हैं। बेहतर विश्लेषण के लिए कृपया अधिक जानकारी दें।"
+                    f"\n\n📋 विश्लेषण: लक्षणांवर आधारित, हे {top_condition['name']} शी संबंधित असू शकते."
                 )
         
         # Add confidence disclaimer
@@ -194,6 +195,11 @@ class AIDoctorService:
                 message_parts.append(
                     f"\n\n⚠️ AI विश्वास: {int(confidence * 100)}% - "
                     "सटीक निदान के लिए डॉक्टर से परामर्श करें।"
+                )
+            elif language == "mr":
+                message_parts.append(
+                    f"\n\n⚠️ AI विश्वास: {int(confidence * 100)}% - "
+                    "अचूक निदानासाठी कृपया डॉक्टरांचा सल्ला घ्या."
                 )
         
         # Collect home care tips
@@ -270,6 +276,11 @@ class AIDoctorService:
                 "⚕️ चिकित्सा अस्वीकरण: यह AI सहायक केवल सामान्य स्वास्थ्य जानकारी प्रदान करता है। "
                 "यह पेशेवर चिकित्सा सलाह का विकल्प नहीं है। "
                 "चिकित्सा संबंधी चिंताओं के लिए हमेशा डॉक्टर से परामर्श करें।"
+            ),
+            "mr": (
+                "⚕️ वैद्यकीय अस्वीकरण: हा AI सहाय्यक केवळ सामान्य आरोग्य माहिती देतो. "
+                "हा व्यावसायिक वैद्यकीय सल्ल्याचा पर्याय नाही. "
+                "वैद्यकीय समस्यांसाठी नेहमी पात्र डॉक्टरांचा सल्ला घ्या."
             )
         }
         return disclaimers.get(language, disclaimers["en"])

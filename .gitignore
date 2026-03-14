@@ -54,3 +54,14 @@ backend/error.txt
 
 # Large files
 frontend/public/doc.mp4
+
+# Local debug and import artifacts
+# Code Citations.md
+backend/debug_output.txt
+backend/test_actual_service.py
+backend/test_gemini_sdk.py
+backend/test_groq_sdk.py
+backend/test_rx_extraction.py
+backend/list_gemini_models.py
+backend/kaggle_az_medicine/
+backend/*.zip

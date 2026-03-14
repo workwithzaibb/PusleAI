@@ -28,7 +28,7 @@ from app.api import (
     appointments_router,
     subscription_router,
     prescription_router,
-    elevenlabs_router
+    groq_agent_router
 )
 
 
@@ -105,7 +105,7 @@ app.include_router(appointments_router, prefix=f"{settings.API_PREFIX}/appointme
 app.include_router(subscription_router, prefix=f"{settings.API_PREFIX}", tags=["Subscriptions"])
 
 app.include_router(prescription_router, prefix=f"{settings.API_PREFIX}", tags=["Prescription Scanner"])
-app.include_router(elevenlabs_router, prefix=f"{settings.API_PREFIX}/elevenlabs", tags=["ElevenLabs"])
+app.include_router(groq_agent_router, prefix=f"{settings.API_PREFIX}/groq", tags=["Groq AI Agent"])
 
 
 @app.get("/", tags=["Health Check"])

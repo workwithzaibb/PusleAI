@@ -1,7 +1,7 @@
 """
 Configuration settings for Pulse AI Backend
 """
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 from functools import lru_cache
 
@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: Optional[str] = None  # Google Gemini API Key
     
     # Language Settings
-    SUPPORTED_LANGUAGES: list = ["en", "hi", "ta", "te"]
+    SUPPORTED_LANGUAGES: list = ["en", "hi", "mr", "ta", "te"]
     DEFAULT_LANGUAGE: str = "en"
     
     # Medical AI Settings
@@ -49,11 +49,10 @@ class Settings(BaseSettings):
     FOLLOW_UP_HOURS: list = [24, 48, 72]
     
     # TTS Settings
-    TTS_ENGINE: str = "gtts"  # gtts or elevenlabs
+    TTS_ENGINE: str = "groq"  # groq or gtts
     
-    # ElevenLabs Voice Cloning Settings
-    ELEVENLABS_API_KEY: Optional[str] = None
-    ELEVENLABS_VOICE_ID: Optional[str] = None  # Your cloned voice ID
+    # Groq AI Settings
+    GROQ_API_KEY: Optional[str] = None
     
     # Medication Reminder Settings
     MEDICATION_FEATURE_ENABLED: bool = True
@@ -71,9 +70,11 @@ class Settings(BaseSettings):
     MENTAL_HEALTH_FEATURE_ENABLED: bool = True
     CRISIS_HELPLINE_NUMBER: str = "988"
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="ignore"
+    )
 
 
 @lru_cache()

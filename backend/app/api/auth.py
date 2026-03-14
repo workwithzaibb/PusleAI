@@ -1,10 +1,11 @@
-"""
+﻿"""
 Authentication Router
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import timedelta
+from app.time_utils import utc_now
 from jose import JWTError, jwt
 import bcrypt
 from typing import Optional
@@ -33,7 +34,7 @@ def get_password_hash(password: str) -> str:
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create JWT access token"""
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = utc_now() + (expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
@@ -137,7 +138,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         
         print("Updating last login...")
         # Update last login
-        user.last_login = datetime.utcnow()
+        user.last_login = utc_now()
         db.commit()
         print("Commited.")
         
@@ -171,7 +172,7 @@ async def login_with_phone(user_data: UserLogin, db: Session = Depends(get_db)):
             detail="Incorrect phone number or password"
         )
     
-    user.last_login = datetime.utcnow()
+    user.last_login = utc_now()
     db.commit()
     
     access_token = create_access_token(data={"sub": user.phone_number})
@@ -186,3 +187,6 @@ async def login_with_phone(user_data: UserLogin, db: Session = Depends(get_db)):
 async def get_current_user_info(current_user: User = Depends(get_current_user)):
     """Get current user information"""
     return UserResponse.model_validate(current_user)
+
+
+

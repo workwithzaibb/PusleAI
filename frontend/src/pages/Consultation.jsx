@@ -1,15 +1,41 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Send, Bot, User, Globe, Zap } from 'lucide-react';
 import { startConsultation, sendMessage, endConsultation } from '../api';
-import ElevenLabsAgent from '../components/ElevenLabsAgent';
 import { useTheme } from '../contexts/ThemeContext';
+
+const GroqAgent = lazy(() => import('../components/GroqAgent'));
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
   { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
+  { code: 'mr', name: 'मराठी', flag: '🇮🇳' },
   { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
 ];
+
+const LANGUAGE_UI = {
+  en: {
+    fallbackGreeting: 'Hello! I am your AI Health Assistant.',
+    retryMessage: 'Sorry, please try again.',
+    placeholder: 'Describe your symptoms...',
+    quickSymptoms: ['Headache', 'Fever', 'Cough', 'Stomach pain'],
+    emergencyLabel: 'EMERGENCY'
+  },
+  hi: {
+    fallbackGreeting: 'नमस्ते! मैं आपकी AI स्वास्थ्य सहायक हूं।',
+    retryMessage: 'माफ़ कीजिए, कृपया फिर से कोशिश करें।',
+    placeholder: 'अपने लक्षण बताएं...',
+    quickSymptoms: ['सिर दर्द', 'बुखार', 'खांसी', 'पेट दर्द'],
+    emergencyLabel: 'आपातकाल'
+  },
+  mr: {
+    fallbackGreeting: 'नमस्कार! मी तुमची AI आरोग्य सहाय्यक आहे.',
+    retryMessage: 'माफ करा, कृपया पुन्हा प्रयत्न करा.',
+    placeholder: 'तुमची लक्षणे सांगा...',
+    quickSymptoms: ['डोकेदुखी', 'ताप', 'खोकला', 'पोटदुखी'],
+    emergencyLabel: 'आपत्कालीन'
+  }
+};
 
 export default function Consultation() {
   const [messages, setMessages] = useState([]);
@@ -20,17 +46,19 @@ export default function Consultation() {
   const [showLang, setShowLang] = useState(false);
   const messagesEnd = useRef(null);
   const navigate = useNavigate();
+  const uiText = LANGUAGE_UI[language] || LANGUAGE_UI.en;
 
-  useEffect(() => { startNew(); }, []);
+  useEffect(() => { startNew(language); }, []);
   useEffect(() => { messagesEnd.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  const startNew = async () => {
+  const startNew = async (selectedLanguage = language) => {
     try {
-      const res = await startConsultation(language);
+      const res = await startConsultation(selectedLanguage);
       setSessionId(res.data.session_id);
       setMessages([{ type: 'ai', content: res.data.message }]);
     } catch {
-      setMessages([{ type: 'ai', content: 'Hello! I am your AI Health Assistant.' }]);
+      const fallbackText = (LANGUAGE_UI[selectedLanguage] || LANGUAGE_UI.en).fallbackGreeting;
+      setMessages([{ type: 'ai', content: fallbackText }]);
     }
   };
 
@@ -44,7 +72,7 @@ export default function Consultation() {
       const res = await sendMessage(sessionId, msg, language);
       setMessages(prev => [...prev, { type: 'ai', content: res.data.message, severity: res.data.severity, isEmergency: res.data.is_emergency }]);
     } catch {
-      setMessages(prev => [...prev, { type: 'ai', content: 'Sorry, please try again.' }]);
+      setMessages(prev => [...prev, { type: 'ai', content: uiText.retryMessage }]);
     }
     setLoading(false);
   };
@@ -64,22 +92,28 @@ export default function Consultation() {
       </div>
 
       {/* Header */}
-      <nav className={`relative z-20 px-6 py-4 flex items-center justify-between border-b ${theme === 'dark' ? 'border-white/10' : 'border-gray-200 bg-white/70 backdrop-blur-xl'}`}>
-        <div className="flex items-center gap-4">
-          <button onClick={handleEnd} className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}><ArrowLeft className="w-5 h-5" /></button>
+      <nav className={`relative z-20 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b mobile-header-safe ${theme === 'dark' ? 'border-white/10' : 'border-gray-200 bg-white/70 backdrop-blur-xl'}`}>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <button onClick={handleEnd} className={`p-2 rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center ${theme === 'dark' ? 'hover:bg-white/10 active:bg-white/20' : 'hover:bg-gray-100 active:bg-gray-200'}`}><ArrowLeft className="w-5 h-5" /></button>
           <div>
-            <h1 className="font-black text-xl tracking-tight flex items-center gap-2">AI DOCTOR <Zap className="w-5 h-5 text-cyan-400" /></h1>
+            <h1 className="font-black text-lg sm:text-xl tracking-tight flex items-center gap-2">AI DOCTOR <Zap className="w-4 sm:w-5 h-4 sm:h-5 text-cyan-400" /></h1>
             <p className={`text-[10px] tracking-[0.2em] ${theme === 'dark' ? 'text-cyan-300' : 'text-cyan-600'}`}>SESSION #{sessionId?.slice(0, 8) || '...'}</p>
           </div>
         </div>
         <div className="relative">
-          <button onClick={() => setShowLang(!showLang)} className={`px-3 py-2 rounded-lg flex items-center gap-2 ${theme === 'dark' ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white border border-gray-200 hover:bg-gray-50'}`}>
+          <button onClick={() => setShowLang(!showLang)} className={`px-3 py-2 rounded-lg flex items-center gap-2 min-h-[44px] ${theme === 'dark' ? 'bg-gray-800 hover:bg-gray-700 active:bg-gray-600' : 'bg-white border border-gray-200 hover:bg-gray-50 active:bg-gray-100'}`}>
             <Globe className="w-4 h-4" /> {LANGUAGES.find(l => l.code === language)?.flag}
           </button>
           {showLang && (
             <div className={`absolute right-0 top-full mt-2 rounded-xl border overflow-hidden z-30 ${theme === 'dark' ? 'bg-gray-900 border-white/10' : 'bg-white border-gray-200 shadow-lg'}`}>
               {LANGUAGES.map(l => (
-                <button key={l.code} onClick={() => { setLanguage(l.code); setShowLang(false); setMessages([]); setTimeout(startNew, 100); }}
+                <button key={l.code} onClick={() => {
+                  setShowLang(false);
+                  if (language === l.code) return;
+                  setLanguage(l.code);
+                  setMessages([]);
+                  setTimeout(() => startNew(l.code), 100);
+                }}
                   className={`w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-800 ${language === l.code ? 'bg-cyan-500/20' : ''}`}>
                   <span>{l.flag}</span> <span className="text-sm">{l.name}</span>
                 </button>
@@ -91,28 +125,30 @@ export default function Consultation() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative z-10">
-        {/* Video Panel */}
-        <div className="lg:w-[400px] p-4 border-b lg:border-b-0 lg:border-r border-white/10 bg-gray-900/50">
-          <ElevenLabsAgent language={language} />
+        {/* Video Panel - Collapsible on mobile */}
+        <div className="lg:w-[400px] p-3 sm:p-4 border-b lg:border-b-0 lg:border-r border-white/10 bg-gray-900/50 max-h-[35vh] lg:max-h-none overflow-hidden">
+          <Suspense fallback={<div className="h-full min-h-[180px] rounded-xl bg-gray-800/70 animate-pulse" />}>
+            <GroqAgent language={language} />
+          </Suspense>
         </div>
 
         {/* Chat */}
-        <div className="flex-1 flex flex-col">
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 touch-action-pan-y">
             {messages.map((msg, i) => (
-              <div key={i} className={`flex gap-3 ${msg.type === 'user' ? 'justify-end' : ''}`}>
+              <div key={i} className={`flex gap-2 sm:gap-3 ${msg.type === 'user' ? 'justify-end' : ''}`}>
                 {msg.type === 'ai' && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                    <Bot className="w-4 h-4" />
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                    <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                 )}
-                <div className={`max-w-[75%] rounded-2xl p-4 ${msg.type === 'user' ? 'bg-cyan-600' : 'bg-gray-800 border border-white/10'} ${msg.isEmergency ? 'border-red-500 bg-red-900/50' : ''}`}>
-                  {msg.isEmergency && <p className="text-red-400 text-xs font-bold mb-2">⚠️ EMERGENCY</p>}
-                  <p className="text-sm">{msg.content}</p>
+                <div className={`max-w-[80%] sm:max-w-[75%] rounded-2xl p-3 sm:p-4 ${msg.type === 'user' ? 'bg-cyan-600' : 'bg-gray-800 border border-white/10'} ${msg.isEmergency ? 'border-red-500 bg-red-900/50' : ''}`}>
+                  {msg.isEmergency && <p className="text-red-400 text-xs font-bold mb-2">⚠️ {uiText.emergencyLabel}</p>}
+                  <p className="text-sm leading-relaxed">{msg.content}</p>
                 </div>
                 {msg.type === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
-                    <User className="w-4 h-4" />
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
+                    <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                 )}
               </div>
@@ -131,20 +167,20 @@ export default function Consultation() {
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-white/10 bg-gray-900/50">
-            <div className="flex gap-3">
+          <div className="p-3 sm:p-4 border-t border-white/10 bg-gray-900/50 mobile-nav-safe">
+            <div className="flex gap-2 sm:gap-3">
               <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()}
-                placeholder="Describe your symptoms..."
-                className="flex-1 px-4 py-3 bg-black border border-white/10 rounded-xl text-white placeholder-gray-600 focus:border-cyan-500" />
+                placeholder={uiText.placeholder}
+                className="flex-1 px-3 sm:px-4 py-3 bg-black border border-white/10 rounded-xl text-white placeholder-gray-600 focus:border-cyan-500 text-base" />
               <button onClick={handleSend} disabled={loading || !input.trim()}
-                className="px-5 py-3 bg-white text-black font-bold rounded-xl hover:bg-cyan-400 disabled:opacity-50">
+                className="px-4 sm:px-5 py-3 bg-white text-black font-bold rounded-xl hover:bg-cyan-400 active:bg-cyan-500 disabled:opacity-50 min-w-[52px] flex items-center justify-center">
                 <Send className="w-5 h-5" />
               </button>
             </div>
-            <div className="flex gap-2 mt-3">
-              {['Headache', 'Fever', 'Cough', 'Stomach pain'].map(s => (
+            <div className="flex gap-2 mt-2 sm:mt-3 overflow-x-auto pb-1 -mx-1 px-1">
+              {uiText.quickSymptoms.map(s => (
                 <button key={s} onClick={() => setInput(prev => prev ? `${prev}, ${s}` : s)}
-                  className="px-3 py-1 bg-gray-800 text-cyan-300 text-xs rounded-full hover:bg-cyan-500/20 hover:text-cyan-400">{s}</button>
+                  className="px-3 py-2 bg-gray-800 text-cyan-300 text-xs rounded-full hover:bg-cyan-500/20 hover:text-cyan-400 active:bg-cyan-500/30 whitespace-nowrap flex-shrink-0">{s}</button>
               ))}
             </div>
           </div>

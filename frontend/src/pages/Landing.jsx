@@ -175,17 +175,17 @@ const Landing = () => {
       </div>
 
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrollY > 50 ? (theme === 'dark' ? 'bg-black/80 backdrop-blur-xl border-b border-white/10' : 'bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-md') : ''}`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 group">
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 mobile-header-safe ${scrollY > 50 ? (theme === 'dark' ? 'bg-black/80 backdrop-blur-xl border-b border-white/10' : 'bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-md') : ''}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3 group">
             <div className="relative">
-              <Heart className="w-10 h-10 text-cyan-400 group-hover:scale-110 transition-transform" />
-              <div className="absolute inset-0 w-10 h-10 bg-cyan-400/30 blur-xl animate-pulse" />
-              <div className="absolute inset-0 w-10 h-10 animate-ping-slow">
-                <Heart className="w-10 h-10 text-cyan-400/30" />
+              <Heart className="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 group-hover:scale-110 transition-transform" />
+              <div className="absolute inset-0 w-8 h-8 sm:w-10 sm:h-10 bg-cyan-400/30 blur-xl animate-pulse" />
+              <div className="absolute inset-0 w-8 h-8 sm:w-10 sm:h-10 animate-ping-slow">
+                <Heart className="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400/30" />
               </div>
             </div>
-            <span className="text-2xl font-black tracking-tighter">
+            <span className="text-xl sm:text-2xl font-black tracking-tighter">
               PULSE<span className="text-cyan-400 animate-text-shimmer">AI</span>
             </span>
           </div>
@@ -203,7 +203,7 @@ const Landing = () => {
           </div>
           <Link 
             to="/login"
-            className="relative px-6 py-3 bg-white text-black font-bold rounded-full overflow-hidden group"
+            className="relative px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-black font-bold rounded-full overflow-hidden group text-sm sm:text-base min-h-[44px] flex items-center"
           >
             <span className="relative z-10">Get Started</span>
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-400 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
@@ -212,17 +212,17 @@ const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative z-10 min-h-screen flex items-center justify-center px-6 pt-20">
+      <section ref={heroRef} className="relative z-10 min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20 sm:pt-24">
         <div className="max-w-6xl mx-auto text-center">
           {/* Animated Badge */}
-          <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full animate-slide-down overflow-hidden group hover:border-cyan-500/50 transition-colors">
+          <div className="mb-6 sm:mb-8 inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-white/5 border border-white/10 rounded-full animate-slide-down overflow-hidden group hover:border-cyan-500/50 transition-colors">
             <Sparkles className="w-4 h-4 text-cyan-400 animate-spin-slow" />
-            <span className="text-sm text-cyan-400">AI-Powered Healthcare Revolution</span>
+            <span className="text-xs sm:text-sm text-cyan-400">AI-Powered Healthcare</span>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
           </div>
           
           {/* Main Headline with Staggered Animation */}
-          <h1 className="text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter mb-8 leading-none">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter mb-6 sm:mb-8 leading-none">
             <span className="block overflow-hidden">
               <span className="block animate-slide-up" style={{ animationDelay: '0.3s' }}>YOUR HEALTH.</span>
             </span>
@@ -236,16 +236,16 @@ const Landing = () => {
           </h1>
           
           {/* Subtitle with Reveal */}
-          <p className="text-xl md:text-2xl text-cyan-200/80 max-w-3xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '1s' }}>
+          <p className="text-base sm:text-xl md:text-2xl text-cyan-200/80 max-w-3xl mx-auto mb-8 sm:mb-12 animate-fade-in px-2" style={{ animationDelay: '1s' }}>
             Experience the future of healthcare with AI-powered consultations, 
             smart medication management, and 24/7 emergency support.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: '1.2s' }}>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 animate-fade-in" style={{ animationDelay: '1.2s' }}>
             <Link 
               to="/login"
-              className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold rounded-full flex items-center gap-2 overflow-hidden"
+              className="group relative px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold rounded-full flex items-center gap-2 overflow-hidden w-full sm:w-auto justify-center min-h-[52px]"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Start Your Journey

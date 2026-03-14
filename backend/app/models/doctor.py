@@ -1,10 +1,10 @@
-"""
+﻿"""
 Doctor Module Models
 Handles doctor profiles, availability, appointments, and prescriptions.
 """
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean, Float, Enum, JSON, Time, Date
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from app.time_utils import utc_now
 import enum
 
 from app.base import Base
@@ -42,7 +42,7 @@ class DoctorProfile(Base):
     rating_count = Column(Integer, default=0)
     
     is_verified = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
     
     user = relationship("User", backref="doctor_profile")
 
@@ -85,8 +85,8 @@ class Appointment(Base):
     notes = Column(Text, nullable=True)     # Internal notes by doctor
     meeting_link = Column(String(500), nullable=True) # Video call link
     
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     
     patient = relationship("User", foreign_keys=[patient_id], backref="appointments")
     doctor = relationship("DoctorProfile", backref="appointments")
@@ -104,6 +104,9 @@ class Prescription(Base):
     medications = Column(JSON, nullable=False)  # List of meds: [{name, dosage, freq}]
     instructions = Column(Text, nullable=True)
     
-    issued_date = Column(DateTime, default=datetime.utcnow)
+    issued_date = Column(DateTime, default=utc_now)
     
     appointment = relationship("Appointment", backref="prescription")
+
+
+

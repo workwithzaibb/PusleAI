@@ -1,26 +1,36 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import Home from './pages/Home';
-import Consultation from './pages/Consultation';
-import Emergency from './pages/Emergency';
-import Medicine from './pages/Medicine';
-import MentalHealth from './pages/MentalHealth';
-import FindDoctor from './pages/FindDoctor';
-import DoctorOnboarding from './pages/DoctorOnboarding';
-import DoctorPricing from './pages/DoctorPricing';
-import DoctorRegister from './pages/DoctorRegister';
-import PrescriptionScanner from './pages/PrescriptionScanner';
-import QueensHealth from './pages/QueensHealth';
-import PCOSManagement from './pages/queens/PCOSManagement';
-import MaternalHealth from './pages/queens/MaternalHealth';
-import AnemiaManagement from './pages/queens/AnemiaManagement';
-import MentalWellbeing from './pages/queens/MentalWellbeing';
-import DietManagement from './pages/queens/DietManagement';
-import PeriodTracker from './pages/queens/PeriodTracker';
-import HealthCursor from './components/HealthCursor';
+
+const Landing = lazy(() => import('./pages/Landing'));
+const Login = lazy(() => import('./pages/Login'));
+const Home = lazy(() => import('./pages/Home'));
+const Consultation = lazy(() => import('./pages/Consultation'));
+const Emergency = lazy(() => import('./pages/Emergency'));
+const Medicine = lazy(() => import('./pages/Medicine'));
+const MentalHealth = lazy(() => import('./pages/MentalHealth'));
+const FindDoctor = lazy(() => import('./pages/FindDoctor'));
+const DoctorOnboarding = lazy(() => import('./pages/DoctorOnboarding'));
+const DoctorPricing = lazy(() => import('./pages/DoctorPricing'));
+const DoctorRegister = lazy(() => import('./pages/DoctorRegister'));
+const PrescriptionScanner = lazy(() => import('./pages/PrescriptionScanner'));
+const QueensHealth = lazy(() => import('./pages/QueensHealth'));
+const PCOSManagement = lazy(() => import('./pages/queens/PCOSManagement'));
+const MaternalHealth = lazy(() => import('./pages/queens/MaternalHealth'));
+const AnemiaManagement = lazy(() => import('./pages/queens/AnemiaManagement'));
+const MentalWellbeing = lazy(() => import('./pages/queens/MentalWellbeing'));
+const DietManagement = lazy(() => import('./pages/queens/DietManagement'));
+const PeriodTracker = lazy(() => import('./pages/queens/PeriodTracker'));
+const HealthCursor = lazy(() => import('./components/HealthCursor'));
+
+function RouteFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black text-cyan-300">
+      <div className="text-sm tracking-widest uppercase animate-pulse">Loading...</div>
+    </div>
+  );
+}
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -72,30 +82,32 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <HealthCursor />
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-          <Route path="/consult" element={<ProtectedRoute><Consultation /></ProtectedRoute>} />
-          <Route path="/consultation" element={<ProtectedRoute><Consultation /></ProtectedRoute>} />
-          <Route path="/emergency" element={<ProtectedRoute><Emergency /></ProtectedRoute>} />
-          <Route path="/medicine" element={<ProtectedRoute><Medicine /></ProtectedRoute>} />
-          <Route path="/mental-health" element={<ProtectedRoute><MentalHealth /></ProtectedRoute>} />
-          <Route path="/doctors" element={<ProtectedRoute><FindDoctor /></ProtectedRoute>} />
-          <Route path="/find-doctor" element={<ProtectedRoute><FindDoctor /></ProtectedRoute>} />
-          <Route path="/doctor-onboarding" element={<ProtectedRoute><DoctorOnboarding /></ProtectedRoute>} />
-          <Route path="/doctor-pricing" element={<DoctorPricing />} />
-          <Route path="/doctor-register" element={<ProtectedRoute><DoctorRegister /></ProtectedRoute>} />
-          <Route path="/prescription-scanner" element={<ProtectedRoute><PrescriptionScanner /></ProtectedRoute>} />
-          <Route path="/queens" element={<ProtectedRoute><QueensHealth /></ProtectedRoute>} />
-          <Route path="/queens/pcos" element={<ProtectedRoute><PCOSManagement /></ProtectedRoute>} />
-          <Route path="/queens/maternal" element={<ProtectedRoute><MaternalHealth /></ProtectedRoute>} />
-          <Route path="/queens/anemia" element={<ProtectedRoute><AnemiaManagement /></ProtectedRoute>} />
-          <Route path="/queens/mental" element={<ProtectedRoute><MentalWellbeing /></ProtectedRoute>} />
-          <Route path="/queens/diet" element={<ProtectedRoute><DietManagement /></ProtectedRoute>} />
-          <Route path="/queens/period" element={<ProtectedRoute><PeriodTracker /></ProtectedRoute>} />
-        </Routes>
+        <Suspense fallback={<RouteFallback />}>
+          <HealthCursor />
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+            <Route path="/consult" element={<ProtectedRoute><Consultation /></ProtectedRoute>} />
+            <Route path="/consultation" element={<ProtectedRoute><Consultation /></ProtectedRoute>} />
+            <Route path="/emergency" element={<ProtectedRoute><Emergency /></ProtectedRoute>} />
+            <Route path="/medicine" element={<ProtectedRoute><Medicine /></ProtectedRoute>} />
+            <Route path="/mental-health" element={<ProtectedRoute><MentalHealth /></ProtectedRoute>} />
+            <Route path="/doctors" element={<ProtectedRoute><FindDoctor /></ProtectedRoute>} />
+            <Route path="/find-doctor" element={<ProtectedRoute><FindDoctor /></ProtectedRoute>} />
+            <Route path="/doctor-onboarding" element={<ProtectedRoute><DoctorOnboarding /></ProtectedRoute>} />
+            <Route path="/doctor-pricing" element={<DoctorPricing />} />
+            <Route path="/doctor-register" element={<ProtectedRoute><DoctorRegister /></ProtectedRoute>} />
+            <Route path="/prescription-scanner" element={<ProtectedRoute><PrescriptionScanner /></ProtectedRoute>} />
+            <Route path="/queens" element={<ProtectedRoute><QueensHealth /></ProtectedRoute>} />
+            <Route path="/queens/pcos" element={<ProtectedRoute><PCOSManagement /></ProtectedRoute>} />
+            <Route path="/queens/maternal" element={<ProtectedRoute><MaternalHealth /></ProtectedRoute>} />
+            <Route path="/queens/anemia" element={<ProtectedRoute><AnemiaManagement /></ProtectedRoute>} />
+            <Route path="/queens/mental" element={<ProtectedRoute><MentalWellbeing /></ProtectedRoute>} />
+            <Route path="/queens/diet" element={<ProtectedRoute><DietManagement /></ProtectedRoute>} />
+            <Route path="/queens/period" element={<ProtectedRoute><PeriodTracker /></ProtectedRoute>} />
+          </Routes>
+        </Suspense>
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>

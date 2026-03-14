@@ -118,13 +118,13 @@ export default function Home() {
       </div>
 
       {/* Header */}
-      <header className={`relative z-20 px-6 py-4 flex items-center justify-between border-b backdrop-blur-xl transition-colors duration-300 ${theme === 'dark' ? 'border-white/10 bg-black/50' : 'border-gray-200 bg-white/70'}`}>
-        <Link to="/" className="flex items-center gap-3">
+      <header className={`relative z-20 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b backdrop-blur-xl transition-colors duration-300 mobile-header-safe ${theme === 'dark' ? 'border-white/10 bg-black/50' : 'border-gray-200 bg-white/70'}`}>
+        <Link to="/" className="flex items-center gap-2 sm:gap-3">
           <div className="relative">
-            <Heart className="w-8 h-8 text-cyan-400" />
+            <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-cyan-400" />
             <div className="absolute inset-0 bg-cyan-400/30 blur-xl animate-pulse" />
           </div>
-          <span className={`text-2xl font-black tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>PULSE<span className="text-cyan-400">AI</span></span>
+          <span className={`text-xl sm:text-2xl font-black tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>PULSE<span className="text-cyan-400">AI</span></span>
         </Link>
         
         <div className="flex items-center gap-4">
@@ -199,16 +199,16 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 px-6 py-8 max-w-7xl mx-auto pb-24 md:pb-8">
+      <main className="relative z-10 px-4 sm:px-6 py-6 sm:py-8 max-w-7xl mx-auto mobile-content-safe">
         {/* Welcome Section */}
-        <section className="mb-10">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <section className="mb-6 sm:mb-10">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 sm:gap-4">
             <div className="animate-slide-in-left">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-1 sm:mb-2">
                 <Sparkles className={`w-4 h-4 animate-spin ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}`} style={{ animationDuration: '3s' }} />
                 <span className={`text-xs font-bold tracking-[0.2em] uppercase ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`}>{greeting()}</span>
               </div>
-              <h1 className={`text-4xl md:text-5xl font-black tracking-tight leading-tight ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              <h1 className={`text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Welcome back,<br />
                 <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-shift">
                   {user?.full_name?.split(' ')[0] || 'there'}!
@@ -216,19 +216,19 @@ export default function Home() {
               </h1>
             </div>
             <div className="text-left md:text-right animate-slide-in-left" style={{ animationDelay: '0.1s' }}>
-              <p className={`text-3xl font-bold tabular-nums ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-cyan-300/70' : 'text-gray-500'}`}>{currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+              <p className={`text-2xl sm:text-3xl font-bold tabular-nums ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+              <p className={`text-xs sm:text-sm ${theme === 'dark' ? 'text-cyan-300/70' : 'text-gray-500'}`}>{currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
             </div>
           </div>
         </section>
 
         {/* Quick Stats */}
-        <section className="mb-10">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <section className="mb-6 sm:mb-10">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {quickStats.map((stat, index) => (
               <div 
                 key={index}
-                className={`group relative p-5 rounded-2xl transition-all duration-500 animate-bounce-in hover-lift overflow-hidden ${theme === 'dark' ? 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-500/30' : 'bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-cyan-400'}`}
+                className={`group relative p-4 sm:p-5 rounded-xl sm:rounded-2xl transition-all duration-500 animate-bounce-in hover-lift overflow-hidden ${theme === 'dark' ? 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-500/30' : 'bg-white border border-gray-200 shadow-md hover:shadow-lg hover:border-cyan-400'}`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Animated gradient on hover */}
@@ -254,13 +254,13 @@ export default function Home() {
         </section>
 
         {/* Main Features Grid */}
-        <section className="mb-10 relative z-30">
-          <div className="flex items-center justify-between mb-5">
+        <section className="mb-6 sm:mb-10 relative z-30">
+          <div className="flex items-center justify-between mb-4 sm:mb-5">
             <h2 className={`text-xs font-bold tracking-[0.3em] uppercase ${theme === 'dark' ? 'text-cyan-400/80' : 'text-cyan-600'}`}>Quick Access</h2>
             <Activity className={`w-4 h-4 animate-pulse ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}`} />
           </div>
           
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {features.map((feature, index) => (
               <div
                 key={feature.path + index}
@@ -577,27 +577,27 @@ export default function Home() {
       </main>
 
       {/* Bottom Navigation for Mobile */}
-      <nav className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t px-4 py-3 md:hidden ${theme === 'dark' ? 'bg-black/90 border-white/10' : 'bg-white/95 border-gray-200 shadow-lg'}`}>
-        <div className="flex items-center justify-around">
-          <Link to="/dashboard" className={`flex flex-col items-center gap-1 relative ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`}>
-            <div className={`absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full ${theme === 'dark' ? 'bg-cyan-400' : 'bg-cyan-500'}`} />
-            <HomeIcon className="w-5 h-5" />
+      <nav className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t px-2 sm:px-4 py-2 md:hidden mobile-nav-safe ${theme === 'dark' ? 'bg-black/90 border-white/10' : 'bg-white/95 border-gray-200 shadow-lg'}`}>
+        <div className="flex items-center justify-around max-w-md mx-auto">
+          <Link to="/dashboard" className={`flex flex-col items-center justify-center gap-1 relative p-2 min-w-[56px] min-h-[56px] rounded-xl active:scale-95 transition-transform ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`}>
+            <div className={`absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full ${theme === 'dark' ? 'bg-cyan-400' : 'bg-cyan-500'}`} />
+            <HomeIcon className="w-6 h-6" />
             <span className="text-[10px] font-bold">Home</span>
           </Link>
-          <Link to="/consultation" className={`flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 ${theme === 'dark' ? 'text-cyan-300 hover:text-cyan-400' : 'text-gray-500 hover:text-cyan-600'}`}>
-            <Brain className="w-5 h-5" />
+          <Link to="/consultation" className={`flex flex-col items-center justify-center gap-1 p-2 min-w-[56px] min-h-[56px] rounded-xl active:scale-95 active:bg-cyan-500/10 transition-all ${theme === 'dark' ? 'text-cyan-300 hover:text-cyan-400' : 'text-gray-500 hover:text-cyan-600'}`}>
+            <Brain className="w-6 h-6" />
             <span className="text-[10px]">AI Doc</span>
           </Link>
-          <Link to="/medicine" className={`flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 ${theme === 'dark' ? 'text-cyan-300 hover:text-cyan-400' : 'text-gray-500 hover:text-cyan-600'}`}>
-            <Pill className="w-5 h-5" />
+          <Link to="/medicine" className={`flex flex-col items-center justify-center gap-1 p-2 min-w-[56px] min-h-[56px] rounded-xl active:scale-95 active:bg-cyan-500/10 transition-all ${theme === 'dark' ? 'text-cyan-300 hover:text-cyan-400' : 'text-gray-500 hover:text-cyan-600'}`}>
+            <Pill className="w-6 h-6" />
             <span className="text-[10px]">Meds</span>
           </Link>
-          <Link to="/mental-health" className={`flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 ${theme === 'dark' ? 'text-cyan-300 hover:text-cyan-400' : 'text-gray-500 hover:text-cyan-600'}`}>
-            <Heart className="w-5 h-5" />
+          <Link to="/mental-health" className={`flex flex-col items-center justify-center gap-1 p-2 min-w-[56px] min-h-[56px] rounded-xl active:scale-95 active:bg-cyan-500/10 transition-all ${theme === 'dark' ? 'text-cyan-300 hover:text-cyan-400' : 'text-gray-500 hover:text-cyan-600'}`}>
+            <Heart className="w-6 h-6" />
             <span className="text-[10px]">Mental</span>
           </Link>
-          <Link to="/emergency" className={`flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 ${theme === 'dark' ? 'text-cyan-300 hover:text-red-400' : 'text-gray-500 hover:text-red-500'}`}>
-            <AlertTriangle className="w-5 h-5" />
+          <Link to="/emergency" className={`flex flex-col items-center justify-center gap-1 p-2 min-w-[56px] min-h-[56px] rounded-xl active:scale-95 active:bg-red-500/10 transition-all ${theme === 'dark' ? 'text-cyan-300 hover:text-red-400' : 'text-gray-500 hover:text-red-500'}`}>
+            <AlertTriangle className="w-6 h-6" />
             <span className="text-[10px]">SOS</span>
           </Link>
         </div>

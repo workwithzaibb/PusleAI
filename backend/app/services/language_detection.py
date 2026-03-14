@@ -13,7 +13,7 @@ LANG_CODE_MAP = {
     "hi": "hi",
     "ta": "ta",
     "te": "te",
-    "mr": "hi",  # Marathi fallback to Hindi
+    "mr": "mr",
     "bn": "hi",  # Bengali fallback to Hindi
     "gu": "hi",  # Gujarati fallback to Hindi
 }

@@ -8,7 +8,7 @@ echo "🚀 Starting PulseAI Backend..."
 cd backend
 
 # Install Python dependencies
-pip install -r requirements.txt
+pip install --no-cache-dir -r requirements.txt
 
-# Start the FastAPI server
+# Start the FastAPI server with proper host and port binding
 python run.py

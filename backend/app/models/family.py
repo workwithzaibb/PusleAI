@@ -1,9 +1,9 @@
-"""
+﻿"""
 Family Member Model - Handles family health accounts
 """
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship as db_relationship
-from datetime import datetime
+from app.time_utils import utc_now
 import enum
 
 from app.base import Base
@@ -46,11 +46,14 @@ class FamilyMember(Base):
     preferred_language = Column(String(5), default="en")
     
     # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     
     # Relationships
     primary_user = db_relationship("User", back_populates="family_members")
     
     def __repr__(self):
         return f"<FamilyMember(id={self.id}, name={self.name}, relation={self.relationship_type})>"
+
+
+

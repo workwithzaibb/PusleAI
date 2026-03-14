@@ -3,6 +3,12 @@ Medicine Database
 Common OTC medicines with safety information
 """
 
+import json
+import os
+import re
+from pathlib import Path
+from typing import Any, Dict, List
+
 MEDICINE_DATABASE = {
     "paracetamol": {
         "aliases": ["acetaminophen", "crocin", "dolo", "calpol", "tylenol", "पैरासिटामोल"],
@@ -215,3 +221,131 @@ MEDICINE_DATABASE = {
         "prescription": False
     }
 }
+
+
+def _is_meaningful(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        text = value.strip().lower()
+        return text not in {"", "unknown", "n/a", "na", "not available", "consult doctor"}
+    if isinstance(value, list):
+        return any(_is_meaningful(item) for item in value)
+    return True
+
+
+def _ensure_list(value: Any) -> List[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    text = str(value).strip()
+    return [text] if text else []
+
+
+def _dedupe_keep_order(items: List[str]) -> List[str]:
+    unique: List[str] = []
+    seen = set()
+    for item in items:
+        key = item.lower().strip()
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        unique.append(item.strip())
+    return unique
+
+
+def _normalize_entry(key: str, entry: Dict[str, Any]) -> Dict[str, Any]:
+    aliases = _ensure_list(entry.get("aliases"))
+    if key not in [alias.lower() for alias in aliases]:
+        aliases.append(key)
+
+    return {
+        "aliases": _dedupe_keep_order(aliases),
+        "category": str(entry.get("category", "Medicine") or "Medicine"),
+        "uses": _dedupe_keep_order(_ensure_list(entry.get("uses"))),
+        "side_effects": _dedupe_keep_order(_ensure_list(entry.get("side_effects"))),
+        "warnings": _dedupe_keep_order(_ensure_list(entry.get("warnings"))),
+        "max_dose": str(entry.get("max_dose", "Consult doctor") or "Consult doctor"),
+        "interactions": _dedupe_keep_order(_ensure_list(entry.get("interactions"))),
+        "safe_children": bool(entry.get("safe_children", False)),
+        "safe_pregnancy": bool(entry.get("safe_pregnancy", False)),
+        "prescription": bool(entry.get("prescription", True)),
+    }
+
+
+def _merge_entry(base: Dict[str, Any], extra: Dict[str, Any]) -> Dict[str, Any]:
+    merged = dict(base)
+
+    merged["aliases"] = _dedupe_keep_order(_ensure_list(base.get("aliases")) + _ensure_list(extra.get("aliases")))
+    merged["uses"] = _dedupe_keep_order(_ensure_list(base.get("uses")) + _ensure_list(extra.get("uses")))
+    merged["side_effects"] = _dedupe_keep_order(_ensure_list(base.get("side_effects")) + _ensure_list(extra.get("side_effects")))
+    merged["warnings"] = _dedupe_keep_order(_ensure_list(base.get("warnings")) + _ensure_list(extra.get("warnings")))
+    merged["interactions"] = _dedupe_keep_order(_ensure_list(base.get("interactions")) + _ensure_list(extra.get("interactions")))
+
+    for scalar_field in ["category", "max_dose"]:
+        base_value = merged.get(scalar_field)
+        extra_value = extra.get(scalar_field)
+        if not _is_meaningful(base_value) and _is_meaningful(extra_value):
+            merged[scalar_field] = extra_value
+
+    # Keep conservative safety defaults. If any source marks True, keep True.
+    merged["safe_children"] = bool(base.get("safe_children", False) or extra.get("safe_children", False))
+    merged["safe_pregnancy"] = bool(base.get("safe_pregnancy", False) or extra.get("safe_pregnancy", False))
+    # If either source flags prescription requirement, keep True.
+    merged["prescription"] = bool(base.get("prescription", True) or extra.get("prescription", True))
+
+    return _normalize_entry(merged.get("aliases", [""])[0].lower() if merged.get("aliases") else "medicine", merged)
+
+
+def _sanitize_key(raw_key: str) -> str:
+    text = raw_key.strip().lower()
+    text = re.sub(r"[^a-z0-9]+", "_", text)
+    text = re.sub(r"_+", "_", text).strip("_")
+    return text or "medicine"
+
+
+def _load_external_medicine_database() -> Dict[str, Dict[str, Any]]:
+    configured_path = os.getenv("MEDICINE_DB_JSON_PATH", "").strip()
+    default_path = Path(__file__).with_name("generated_medicine_db.json")
+    candidate_paths = [Path(configured_path)] if configured_path else [default_path]
+
+    for path in candidate_paths:
+        if not path.exists():
+            continue
+
+        try:
+            with path.open("r", encoding="utf-8") as file:
+                payload = json.load(file)
+        except Exception as exc:
+            print(f"Warning: failed loading external medicine DB from {path}: {exc}")
+            continue
+
+        if not isinstance(payload, dict):
+            print(f"Warning: external medicine DB at {path} must be a JSON object keyed by medicine")
+            continue
+
+        normalized: Dict[str, Dict[str, Any]] = {}
+        for raw_key, raw_entry in payload.items():
+            if not isinstance(raw_entry, dict):
+                continue
+            key = _sanitize_key(str(raw_key))
+            normalized[key] = _normalize_entry(key, raw_entry)
+        return normalized
+
+    return {}
+
+
+def _merge_external_medicine_database() -> None:
+    external_db = _load_external_medicine_database()
+    if not external_db:
+        return
+
+    for key, extra_entry in external_db.items():
+        if key in MEDICINE_DATABASE:
+            MEDICINE_DATABASE[key] = _merge_entry(MEDICINE_DATABASE[key], extra_entry)
+        else:
+            MEDICINE_DATABASE[key] = extra_entry
+
+
+_merge_external_medicine_database()

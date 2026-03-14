@@ -1,6 +1,7 @@
 """
 Medicine Safety Checker - Validates medicine safety and interactions
 """
+import re
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 
@@ -37,6 +38,13 @@ class MedicineChecker:
     
     def __init__(self):
         self.medicine_db = MEDICINE_DATABASE
+
+    @staticmethod
+    def _normalize_medicine_text(value: str) -> str:
+        """Normalize medicine text for robust matching across formats."""
+        text = value.lower().strip()
+        text = re.sub(r"[^a-z0-9]+", "", text)
+        return text
     
     def lookup(self, medicine_name: str) -> MedicineInfo:
         """
@@ -49,12 +57,23 @@ class MedicineChecker:
             MedicineInfo with details
         """
         name_lower = medicine_name.lower().strip()
+        name_normalized = self._normalize_medicine_text(medicine_name)
         
         # Search in database
         for med_key, med_data in self.medicine_db.items():
             aliases = [med_key.lower()] + [a.lower() for a in med_data.get("aliases", [])]
-            
-            if name_lower in aliases or any(name_lower in a for a in aliases):
+            normalized_aliases = [self._normalize_medicine_text(alias) for alias in aliases]
+
+            exact_match = name_lower in aliases
+            substring_match = any(name_lower in alias for alias in aliases)
+            normalized_match = any(
+                name_normalized == alias_norm
+                or (len(name_normalized) >= 4 and name_normalized in alias_norm)
+                or (len(alias_norm) >= 4 and alias_norm in name_normalized)
+                for alias_norm in normalized_aliases
+            )
+
+            if exact_match or substring_match or normalized_match:
                 return MedicineInfo(
                     name=med_key,
                     found=True,

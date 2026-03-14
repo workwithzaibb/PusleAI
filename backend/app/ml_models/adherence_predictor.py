@@ -1,8 +1,9 @@
-"""
+﻿"""
 Adherence Predictor - ML model for predicting medication non-adherence risk
 Uses historical patterns to identify users at risk of missing doses
 """
-from datetime import datetime, timedelta
+from datetime import timedelta
+from app.time_utils import utc_now
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 import numpy as np
@@ -102,7 +103,7 @@ class AdherencePredictor:
     ) -> AdherenceFeatures:
         """Extract features from raw data for prediction"""
         
-        now = datetime.utcnow()
+        now = utc_now()
         
         # Filter logs by time period
         logs_7d = [l for l in adherence_logs if l["created_at"] > now - timedelta(days=7)]
@@ -330,7 +331,7 @@ class AdherencePredictor:
         end_hour: int
     ) -> float:
         """Calculate percentage of missed doses in time range"""
-        in_range = [l for l in logs if start_hour <= l.get("scheduled_datetime", datetime.utcnow()).hour < end_hour]
+        in_range = [l for l in logs if start_hour <= l.get("scheduled_datetime", utc_now()).hour < end_hour]
         if not in_range:
             return 0.0
         missed = sum(1 for l in in_range if l.get("status") == "missed")
@@ -338,7 +339,7 @@ class AdherencePredictor:
     
     def _calc_missed_weekend(self, logs: List[Dict[str, Any]]) -> float:
         """Calculate percentage of missed doses on weekends"""
-        weekend_logs = [l for l in logs if l.get("scheduled_datetime", datetime.utcnow()).weekday() >= 5]
+        weekend_logs = [l for l in logs if l.get("scheduled_datetime", utc_now()).weekday() >= 5]
         if not weekend_logs:
             return 0.0
         missed = sum(1 for l in weekend_logs if l.get("status") == "missed")
@@ -350,7 +351,7 @@ class AdherencePredictor:
             return {"current": 0, "longest": 0, "average": 0}
         
         # Sort by date
-        sorted_logs = sorted(logs, key=lambda x: x.get("scheduled_datetime", datetime.utcnow()))
+        sorted_logs = sorted(logs, key=lambda x: x.get("scheduled_datetime", utc_now()))
         
         streaks = []
         current = 0
@@ -392,3 +393,6 @@ class AdherencePredictor:
 
 # Singleton instance
 adherence_predictor = AdherencePredictor()
+
+
+

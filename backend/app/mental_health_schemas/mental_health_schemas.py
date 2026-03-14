@@ -1,7 +1,7 @@
 """
 Mental Health Schemas
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from enum import Enum
@@ -42,8 +42,7 @@ class MoodEntryResponse(BaseModel):
     factors: Optional[List[str]]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ Journal Schemas ============
@@ -65,8 +64,7 @@ class JournalResponse(BaseModel):
     emotion_tags: Optional[List[str]]
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ Chat/Therapy Schemas ============
@@ -106,8 +104,7 @@ class AssessmentResponse(BaseModel):
     recommendations: List[str]
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ Crisis Schemas ============

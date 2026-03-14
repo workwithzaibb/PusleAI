@@ -1,7 +1,7 @@
 """
 Pydantic Schemas for API Request/Response validation
 """
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
@@ -53,8 +53,7 @@ class UserResponse(UserBase):
     role: str
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Token(BaseModel):
@@ -180,8 +179,7 @@ class FamilyMemberResponse(FamilyMemberCreate):
     primary_user_id: int
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ Follow-up Schemas ============

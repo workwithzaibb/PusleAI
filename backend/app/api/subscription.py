@@ -1,4 +1,4 @@
-"""
+﻿"""
 Subscription API Endpoints
 Handles subscription plans, doctor registration with payment, and perk purchases.
 """
@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from typing import List, Optional
 from datetime import datetime, timedelta
-from pydantic import BaseModel, Field
+from app.time_utils import utc_now
+from pydantic import BaseModel, Field, ConfigDict
 
 from app.database import get_db
 from app.models.subscription import (
@@ -45,8 +46,7 @@ class SubscriptionPlanResponse(BaseModel):
     custom_branding: bool
     is_popular: bool
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DoctorRegistrationRequest(BaseModel):
@@ -90,8 +90,7 @@ class PerkResponse(BaseModel):
     duration_days: Optional[int]
     icon: Optional[str]
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PurchasePerkRequest(BaseModel):
@@ -280,7 +279,7 @@ async def register_as_doctor(
     db.flush()  # Get doctor.id
     
     # Create subscription
-    start_date = datetime.utcnow()
+    start_date = utc_now()
     end_date = start_date + timedelta(days=plan.billing_period_days)
     
     subscription = DoctorSubscription(
@@ -301,10 +300,10 @@ async def register_as_doctor(
         currency=plan.currency,
         status=PaymentStatus.COMPLETED,  # Mock: auto-complete
         payment_method=request.payment_method,
-        transaction_id=f"TXN_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{subscription.id}",
+        transaction_id=f"TXN_{utc_now().strftime('%Y%m%d%H%M%S')}_{subscription.id}",
         payment_gateway="mock_gateway",
         card_last_four=request.card_number[-4:] if request.card_number else None,
-        paid_at=datetime.utcnow()
+        paid_at=utc_now()
     )
     db.add(payment)
     
@@ -367,7 +366,7 @@ async def get_my_subscription(
         )
     
     plan = subscription.plan
-    days_remaining = (subscription.end_date - datetime.utcnow()).days if subscription.end_date else 0
+    days_remaining = (subscription.end_date - utc_now()).days if subscription.end_date else 0
     
     return SubscriptionStatusResponse(
         has_subscription=True,
@@ -482,16 +481,16 @@ async def purchase_perk(
     # Calculate expiry date
     expiry_date = None
     if perk.duration_days:
-        expiry_date = datetime.utcnow() + timedelta(days=perk.duration_days)
+        expiry_date = utc_now() + timedelta(days=perk.duration_days)
     
     # Create purchase record
     purchase = DoctorPerkPurchase(
         doctor_id=doctor.id,
         perk_id=perk.id,
-        purchase_date=datetime.utcnow(),
+        purchase_date=utc_now(),
         expiry_date=expiry_date,
         is_active=True,
-        payment_transaction_id=f"PERK_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{perk.id}",
+        payment_transaction_id=f"PERK_{utc_now().strftime('%Y%m%d%H%M%S')}_{perk.id}",
         amount_paid=perk.price
     )
     db.add(purchase)
@@ -505,3 +504,6 @@ async def purchase_perk(
         "expiry_date": expiry_date,
         "amount_paid": perk.price
     }
+
+
+

@@ -1,0 +1,21 @@
+{
+  "name": "PulseAI - Virtual Doctor",
+  "short_name": "PulseAI",
+  "description": "Your AI-powered health companion - Get instant medical consultations, track medications, and monitor your health",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#00d9ff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "medical", "lifestyle"],
+  "lang": "en",
+  "dir": "ltr"
+}

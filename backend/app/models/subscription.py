@@ -1,10 +1,10 @@
-"""
+﻿"""
 Subscription Models for Doctor Registration
 Handles subscription plans, purchases, and doctor premium features.
 """
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean, Float, Enum, JSON
 from sqlalchemy.orm import relationship
-from datetime import datetime, timedelta
+from app.time_utils import utc_now
 import enum
 
 from app.base import Base
@@ -60,7 +60,7 @@ class SubscriptionPlan(Base):
     is_active = Column(Boolean, default=True)
     display_order = Column(Integer, default=0)
     
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
 
 class DoctorSubscription(Base):
@@ -81,8 +81,8 @@ class DoctorSubscription(Base):
     # Auto-renewal
     auto_renew = Column(Boolean, default=True)
     
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
     
     doctor = relationship("DoctorProfile", backref="subscriptions")
     plan = relationship("SubscriptionPlan", backref="subscriptions")
@@ -113,7 +113,7 @@ class Payment(Base):
     
     # Timestamps
     paid_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
     
     subscription = relationship("DoctorSubscription", backref="payments")
 
@@ -137,7 +137,7 @@ class DoctorPerk(Base):
     icon = Column(String(50), nullable=True)  # Icon name for frontend
     is_active = Column(Boolean, default=True)
     
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
 
 class DoctorPerkPurchase(Base):
@@ -150,7 +150,7 @@ class DoctorPerkPurchase(Base):
     doctor_id = Column(Integer, ForeignKey("doctor_profiles.id"), nullable=False, index=True)
     perk_id = Column(Integer, ForeignKey("doctor_perks.id"), nullable=False)
     
-    purchase_date = Column(DateTime, default=datetime.utcnow)
+    purchase_date = Column(DateTime, default=utc_now)
     expiry_date = Column(DateTime, nullable=True)
     
     is_active = Column(Boolean, default=True)
@@ -161,3 +161,6 @@ class DoctorPerkPurchase(Base):
     
     doctor = relationship("DoctorProfile", backref="purchased_perks")
     perk = relationship("DoctorPerk", backref="purchases")
+
+
+

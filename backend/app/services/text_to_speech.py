@@ -1,6 +1,6 @@
 """
 Text-to-Speech Service for multilingual voice responses
-Supports Google TTS and ElevenLabs for voice cloning
+Supports Groq TTS (Orpheus) and Google TTS as fallback
 """
 import os
 import tempfile
@@ -20,65 +20,70 @@ LANGUAGE_MAP = {
     "te": "te"
 }
 
+# Groq TTS configuration
+GROQ_TTS_MODEL = "playai-tts"
+GROQ_TTS_VOICE = "Celeste-PlayAI"  # Female voice for Dr. Maya
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+
 
 class TextToSpeechService:
     """Handles text-to-speech conversion"""
     
     def __init__(self):
         self.engine = settings.TTS_ENGINE
-        self.elevenlabs_api_key = getattr(settings, 'ELEVENLABS_API_KEY', None)
-        self.elevenlabs_voice_id = getattr(settings, 'ELEVENLABS_VOICE_ID', None)
+        self.groq_api_key = getattr(settings, 'GROQ_API_KEY', None)
         
-    async def synthesize_elevenlabs(
+    async def synthesize_groq(
         self,
         text: str,
-        voice_id: str = None
+        voice: str = None
     ) -> bytes:
         """
-        Convert text to speech using ElevenLabs API
+        Convert text to speech using Groq's TTS API (Orpheus model)
         
         Args:
             text: Text to convert
-            voice_id: ElevenLabs voice ID (uses default if not provided)
+            voice: Groq voice name (uses default if not provided)
             
         Returns:
             Audio data as bytes
         """
-        voice_id = voice_id or self.elevenlabs_voice_id
+        voice = voice or GROQ_TTS_VOICE
         
-        if not self.elevenlabs_api_key or not voice_id:
-            print("ElevenLabs not configured, falling back to gTTS")
+        if not self.groq_api_key:
+            print("Groq not configured, falling back to gTTS")
             return await self.synthesize_gtts(text)
         
         try:
-            url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-            
             headers = {
-                "Accept": "audio/mpeg",
-                "Content-Type": "application/json",
-                "xi-api-key": self.elevenlabs_api_key
+                "Authorization": f"Bearer {self.groq_api_key}",
+                "Content-Type": "application/json"
             }
             
             data = {
-                "text": text,
-                "model_id": "eleven_monolingual_v1",
-                "voice_settings": {
-                    "stability": 0.5,
-                    "similarity_boost": 0.75
-                }
+                "model": GROQ_TTS_MODEL,
+                "input": text,
+                "voice": voice,
+                "response_format": "mp3",
+                "speed": 1.0
             }
             
             async with httpx.AsyncClient() as client:
-                response = await client.post(url, json=data, headers=headers, timeout=30.0)
+                response = await client.post(
+                    f"{GROQ_BASE_URL}/audio/speech",
+                    json=data,
+                    headers=headers,
+                    timeout=30.0
+                )
                 
                 if response.status_code == 200:
                     return response.content
                 else:
-                    print(f"ElevenLabs error: {response.status_code} - {response.text}")
+                    print(f"Groq TTS error: {response.status_code} - {response.text}")
                     return await self.synthesize_gtts(text)
                     
         except Exception as e:
-            print(f"ElevenLabs error: {e}")
+            print(f"Groq TTS error: {e}")
             return await self.synthesize_gtts(text)
     
     async def synthesize_gtts(
@@ -123,11 +128,11 @@ class TextToSpeechService:
         Returns:
             Audio data as bytes
         """
-        # Use ElevenLabs if configured and language is English
-        if self.elevenlabs_api_key and self.elevenlabs_voice_id and language == "en":
-            return await self.synthesize_elevenlabs(text)
+        # Use Groq TTS if configured (currently supports English)
+        if self.groq_api_key and language == "en":
+            return await self.synthesize_groq(text)
         
-        # Fallback to gTTS for other languages or if ElevenLabs not configured
+        # Fallback to gTTS for other languages or if Groq not configured
         return await self.synthesize_gtts(text, language, slow)
     
     async def synthesize_base64(
